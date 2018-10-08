@@ -1,6 +1,6 @@
 EXECUTABLE:=dmgb
 TEST_EXECUTABLE:=test
-MODULES:=cpu mmu
+MODULES:=cpu mmu utl
 BUILD_SYSTEM=nrmk
 
 CXXFLAGS:=-Wall -Wextra -pedantic -std=c++17

@@ -9,7 +9,11 @@ LIB:=
 TST_LFLAGS:=
 TST_LIB:=
 
+INCLUDE:=
+
 include $(abspath $(patsubst %,%/module.mk,$(MODULES)))
+
+CXXFLAGS+=$(patsubst %,-I%,$(INCLUDE))
 
 $(EXECUTABLE): $(EXECUTABLE).cpp $(LIB)
 	$(CXX) $(CXXFLAGS) $^ -o $@
