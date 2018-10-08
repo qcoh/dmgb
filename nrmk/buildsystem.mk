@@ -1,19 +1,29 @@
-BEGIN_MODULE=$(BUILD_SYSTEM)/begin_module.mk
-END_MODULE=$(BUILD_SYSTEM)/end_module.mk
+.DEFAULT_GOAL:=$(EXECUTABLE)
+
+BEGIN_MODULE:=$(BUILD_SYSTEM)/begin_module.mk
+END_MODULE:=$(BUILD_SYSTEM)/end_module.mk
+
+LFLAGS:=
+LIB:=
+
+TST_LFLAGS:=
+TST_LIB:=
 
 include $(abspath $(patsubst %,%/module.mk,$(MODULES)))
 
-OBJ:=$(patsubst %.cpp,%.o,$(SRC))
-TST_OBJ:=$(patsubst %.cpp,%.o,$(TST_SRC))
-
-$(EXECUTABLE): $(OBJ)
-	$(CXX) $(CXXFLAGS) $(OBJ) -o $@
+$(EXECUTABLE): $(EXECUTABLE).cpp $(LIB)
+	$(CXX) $(CXXFLAGS) $^ -o $@
 
 $(OBJ): %.o : %.cpp
 	$(CXX) $(CXXFLAGS) -c $< -o $@
 
-$(TEST_EXECUTABLE): $(OBJ) $(TST_OBJ)
-	$(CXX) $(CXXFLAGS) $(OBJ) $(TST_OBJ) -o $@
+$(TEST_EXECUTABLE): $(TEST_EXECUTABLE).cpp $(TST_LIB) $(LIB)
+	$(CXX) $(CXXFLAGS) $^ -o $@
 
 $(TST_OBJ): %.o : %.cpp
 	$(CXX) $(CXXFLAGS) -c -g $< -o $@
+
+.PHONY: clean
+
+clean:
+	rm -f $(EXECUTABLE) $(TEST_EXECUTABLE) $(OBJ) $(TST_OBJ) $(LIB) $(TST_LIB)
