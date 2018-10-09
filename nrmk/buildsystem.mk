@@ -3,6 +3,9 @@
 BEGIN_MODULE:=$(BUILD_SYSTEM)/begin_module.mk
 END_MODULE:=$(BUILD_SYSTEM)/end_module.mk
 
+BEGIN_TEST_MODULE:=$(BUILD_SYSTEM)/begin_test_module.mk
+END_TEST_MODULE:=$(BUILD_SYSTEM)/end_test_module.mk
+
 SRC:=
 TST_SRC:=
 
