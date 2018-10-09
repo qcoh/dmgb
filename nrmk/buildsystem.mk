@@ -29,11 +29,11 @@ $(BIN): $(BIN).cpp $(OBJ)
 $(OBJ): %.o : %.cpp
 	$(CXX) $(CXXFLAGS) -c $< -o $@
 
-$(TST): $(TST).cpp $(OBJ) $(TST_OBJ)
-	$(CXX) $(CXXFLAGS) $(TST_CXXFLAGS) $^ -o $@
+$(TST): $(OBJ) $(TST_OBJ)
+	$(CXX) $^ -o $@
 
 $(TST_OBJ): %.o : %.cpp
-	$(CXX) $(CXXFLAGS) $(TST_CXXFLAGS) -c -g $< -o $@
+	$(CXX) $(CXXFLAGS) $(TST_CXXFLAGS) -c $< -o $@
 
 .PHONY: clean
 
