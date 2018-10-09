@@ -6,13 +6,18 @@ END_MODULE:=$(BUILD_SYSTEM)/end_module.mk
 BEGIN_TEST_MODULE:=$(BUILD_SYSTEM)/begin_test_module.mk
 END_TEST_MODULE:=$(BUILD_SYSTEM)/end_test_module.mk
 
+BEGIN_BINARY:=$(BUILD_SYSTEM)/begin_binary.mk
+END_BINARY:=$(BUILD_SYSTEM)/end_binary.mk
+
 SRC:=
+BIN_SRC:=
 TST_SRC:=
 
 INC:=
 TST_INC:=
 
 OBJ:=
+BIN_OBJ:=
 TST_OBJ:=
 
 include $(abspath $(patsubst %,%/module.mk,$(MODULES)))
@@ -23,10 +28,13 @@ TST_CXXFLAGS:=$(patsubst %,-I%,$(TST_INC))
 
 all: $(BIN) $(TST)
 
-$(BIN): $(BIN).cpp $(OBJ)
-	$(CXX) $(CXXFLAGS) $^ -o $@
+$(BIN): $(OBJ) $(BIN_OBJ)
+	$(CXX) $^ -o $@
 
 $(OBJ): %.o : %.cpp
+	$(CXX) $(CXXFLAGS) -c $< -o $@
+
+$(BIN_OBJ): %.o : %.cpp
 	$(CXX) $(CXXFLAGS) -c $< -o $@
 
 $(TST): $(OBJ) $(TST_OBJ)
