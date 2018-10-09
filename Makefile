@@ -1,5 +1,5 @@
-EXECUTABLE:=dmgb
-TEST_EXECUTABLE:=test
+BIN:=dmgb
+TST:=test
 MODULES:=cpu mmu utl
 BUILD_SYSTEM=nrmk
 

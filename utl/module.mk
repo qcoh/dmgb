@@ -2,7 +2,7 @@ include $(BEGIN_MODULE)
 
 MODULE:=utl
 
-INCLUDE+=$(MODULE)/public
+INC+=public
 
 SRC+=word.cpp
 

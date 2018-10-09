@@ -1,33 +1,38 @@
-.DEFAULT_GOAL:=$(EXECUTABLE)
+.DEFAULT_GOAL:=all
 
 BEGIN_MODULE:=$(BUILD_SYSTEM)/begin_module.mk
 END_MODULE:=$(BUILD_SYSTEM)/end_module.mk
 
-LFLAGS:=
-LIB:=
+SRC:=
+TST_SRC:=
 
-TST_LFLAGS:=
-TST_LIB:=
+INC:=
+TST_INC:=
 
-INCLUDE:=
+OBJ:=
+TST_OBJ:=
 
 include $(abspath $(patsubst %,%/module.mk,$(MODULES)))
 
-CXXFLAGS+=$(patsubst %,-I%,$(INCLUDE))
+CXXFLAGS+=$(patsubst %,-I%,$(INC))
 
-$(EXECUTABLE): $(EXECUTABLE).cpp $(LIB)
+TST_CXXFLAGS:=$(patsubst %,-I%,$(TST_INC))
+
+all: $(BIN) $(TST)
+
+$(BIN): $(BIN).cpp $(OBJ)
 	$(CXX) $(CXXFLAGS) $^ -o $@
 
 $(OBJ): %.o : %.cpp
 	$(CXX) $(CXXFLAGS) -c $< -o $@
 
-$(TEST_EXECUTABLE): $(TEST_EXECUTABLE).cpp $(TST_LIB) $(LIB)
-	$(CXX) $(CXXFLAGS) $^ -o $@
+$(TST): $(TST).cpp $(OBJ) $(TST_OBJ)
+	$(CXX) $(CXXFLAGS) $(TST_CXXFLAGS) $^ -o $@
 
 $(TST_OBJ): %.o : %.cpp
-	$(CXX) $(CXXFLAGS) -c -g $< -o $@
+	$(CXX) $(CXXFLAGS) $(TST_CXXFLAGS) -c -g $< -o $@
 
 .PHONY: clean
 
 clean:
-	rm -f $(EXECUTABLE) $(TEST_EXECUTABLE) $(OBJ) $(TST_OBJ) $(LIB) $(TST_LIB)
+	rm -f $(BIN) $(TST) $(OBJ) $(TST_OBJ) 
