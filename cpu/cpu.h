@@ -1,6 +1,7 @@
 #pragma once
 
 #include "types.h"
+#include "word.h"
 
 namespace cpu {
 

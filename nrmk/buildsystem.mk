@@ -23,6 +23,7 @@ TST_OBJ:=
 include $(abspath $(patsubst %,%/module.mk,$(MODULES)))
 
 CXXFLAGS+=$(patsubst %,-I%,$(INC))
+CXXFLAGS+=-MMD
 
 TST_CXXFLAGS:=$(patsubst %,-I%,$(TST_INC))
 
@@ -46,4 +47,8 @@ $(TST_OBJ): %.o : %.cpp
 .PHONY: clean
 
 clean:
-	rm -f $(BIN) $(TST) $(OBJ) $(TST_OBJ) 
+	rm -f $(BIN) $(TST) $(OBJ) $(TST_OBJ) $(SRC:%.cpp=%.d) $(TST_SRC:%.cpp=%.d) $(BIN_SRC:%.cpp=%.d)
+
+-include $(SRC:%.cpp=%.d)
+-include $(TST_SRC:%.cpp=%.d)
+-include $(BIN_SRC:%.cpp=%.d)
