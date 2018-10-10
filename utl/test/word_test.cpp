@@ -18,5 +18,14 @@ SCENARIO("Endianess of word", "[utl]") {
 				REQUIRE(static_cast<u8>(w >> 8) == 0);
 			}
 		}
+		WHEN("incrementing where lsb is 0xff") {
+			lo = 0xff;
+			w = w + 1;
+			
+			THEN("the digit is carried from lsb to msb") {
+				REQUIRE(lo == 0);
+				REQUIRE(hi == 1);
+			}
+		}
 	}
 }
