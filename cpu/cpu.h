@@ -26,4 +26,6 @@ struct cpu {
 	u16 sp{0xffffU};
 };
 
+void step(cpu&, mmu_ref) noexcept;
+
 }
