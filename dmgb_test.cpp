@@ -1,5 +1,6 @@
-#include <iostream>
+#define CATCH_CONFIG_MAIN
+#include "catch2/catch.hpp"
 
-int main() {
-	std::cout << "sup?\n";
+TEST_CASE("asd", "[asd]") {
+	REQUIRE(1 == 1);
 }
