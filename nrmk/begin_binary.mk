@@ -1,2 +1,0 @@
-TMP_BIN_SRC:=$(BIN_SRC)
-BIN_SRC:=
