@@ -3,8 +3,10 @@ set(SOURCE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/source")
 
 set(SOURCES
 	${INCLUDE_DIR}/mmu.h
+	${INCLUDE_DIR}/bios.h
 
 	${SOURCE_DIR}/mmu.cpp
+	${SOURCE_DIR}/bios.cpp
 )
 
 add_library(mmu STATIC ${SOURCES})
