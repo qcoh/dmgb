@@ -16,4 +16,4 @@ target_link_libraries(${PROJECT_NAME}_test
 	Catch2::Catch2
 )
 
-add_test(NAME dmgb_test COMMAND dmgb_test)
+add_test(Test dmgb_test)
