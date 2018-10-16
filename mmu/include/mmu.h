@@ -4,10 +4,19 @@
 
 namespace mmu {
 
+class bios;
+
 // mmu wires bios, cartridge, ram and IO registers together.
 class mmu {
 public:
-	mmu();
+	mmu(const bios&);
+	~mmu();
+
+	mmu(const mmu&) = delete;
+	mmu& operator=(const mmu&) = delete;
+	mmu(mmu&&) = delete;
+	mmu& operator=(mmu&&) = delete;
+
 	operator mmu_ref () const noexcept;
 
 private:
@@ -15,6 +24,10 @@ private:
 
 	struct ref_wrapper;
 	ref_wrapper* m_ref_wrapper;
+
+	const bios& m_bios;
+
+	static mmu* s_mmu;
 };
 
 }

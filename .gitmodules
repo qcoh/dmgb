@@ -4,3 +4,6 @@
 [submodule "external/catch2"]
 	path = dmgb_test/external/catch2
 	url = https://github.com/catchorg/catch2
+[submodule "external/gsl"]
+	path = external/gsl
+	url = https://github.com/Microsoft/GSL
