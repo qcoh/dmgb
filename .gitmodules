@@ -1,6 +1,6 @@
 [submodule "external/rapidcheck"]
-	path = external/rapidcheck
+	path = dmgb_test/external/rapidcheck
 	url = https://github.com/emil-e/rapidcheck
 [submodule "external/catch2"]
-	path = external/catch2
+	path = dmgb_test/external/catch2
 	url = https://github.com/catchorg/catch2

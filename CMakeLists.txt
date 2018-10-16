@@ -18,8 +18,8 @@ add_subdirectory(cpu)
 add_subdirectory(mmu)
 add_subdirectory(utl)
 
-add_subdirectory(external/rapidcheck)
-add_subdirectory(external/catch2)
+enable_testing()
+add_subdirectory(dmgb_test)
 
 add_executable(${PROJECT_NAME}
 	dmgb.cpp
@@ -29,16 +29,4 @@ target_link_libraries(${PROJECT_NAME}
 	cpu
 	mmu
 	utl
-)
-
-add_executable(${PROJECT_NAME}_test
-	dmgb_test.cpp
-)
-
-target_link_libraries(${PROJECT_NAME}_test
-	cpu
-	mmu
-	utl
-	rapidcheck
-	Catch2::Catch2
 )
