@@ -2,6 +2,7 @@ set(SOURCES
 	bios_test.cpp
 	dmgb_test.cpp
 	mmu_test.cpp
+	cpu_test.cpp
 )
 
 add_subdirectory(external/catch2)
