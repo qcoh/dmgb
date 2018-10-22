@@ -2,6 +2,7 @@
 
 #include "types.h"
 #include "word.h"
+#include "bitref.h"
 
 namespace cpu {
 
@@ -16,6 +17,11 @@ struct cpu {
 	u8 e{0U};
 	u8 h{0U};
 	u8 l{0U};
+
+	bitref<7> zf{f};
+	bitref<6> nf{f};
+	bitref<5> hf{f};
+	bitref<4> cf{f};
 
 	word af{a, f};
 	word bc{b, c};

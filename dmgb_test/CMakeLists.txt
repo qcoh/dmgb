@@ -3,6 +3,7 @@ set(SOURCES
 	dmgb_test.cpp
 	mmu_test.cpp
 	cpu_test.cpp
+	bitref_test.cpp
 )
 
 add_subdirectory(external/catch2)

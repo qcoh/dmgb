@@ -22,3 +22,21 @@ SCENARIO("basic lds", "[cpu]") {
 	}
 }
 
+SCENARIO("add", "[cpu]") {
+	GIVEN("a cpu and mmu") {
+		cpu::cpu c{};
+		u8 m[0x10000] = {0};
+
+		c.a = 12;
+		c.b = 34;
+
+		WHEN("adding b to a") {
+			m[c.pc] = 0x80;
+			cpu::step(c, m);
+
+			THEN("the sum is stored in a") {
+				REQUIRE(c.a == 46);
+			}
+		}
+	}
+}

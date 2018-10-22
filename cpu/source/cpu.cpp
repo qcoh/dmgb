@@ -26,9 +26,26 @@ inline u8& reg(cpu& cpu, mmu_ref mmu) {
 	}
 }
 
-template <u8 Op, u8 Dst = (Op >> 3) & 0x7, u8 Src = (Op & 0x7)>
+template <u8 Op>
 void ld(cpu& cpu, mmu_ref mmu) {
+	constexpr const u8 Dst = (Op >> 3) & 0x7;
+	constexpr const u8 Src = (Op & 0x7);
 	reg<Dst>(cpu, mmu) = reg<Src>(cpu, mmu);
+}
+
+template <u8 Op>
+void add(cpu& cpu, mmu_ref mmu) {
+	constexpr const u8 Src = (Op & 0x7);
+
+	const u8 src = reg<Src>(cpu, mmu);
+
+	cpu.hf = ((cpu.a & 0xf) + src) > 0xf;
+	cpu.cf = (cpu.a + src) > 0xff;
+
+	reg<0x7>(cpu, mmu) += src;
+
+	cpu.zf = cpu.a == 0;
+	cpu.nf = false;
 }
 
 }
@@ -165,14 +182,14 @@ void step(cpu& cpu, mmu_ref mmu) noexcept {
 	case 0x7d: ld<0x7d>(cpu, mmu); break;
 	case 0x7e: ld<0x7e>(cpu, mmu); break;
 	case 0x7f: ld<0x7f>(cpu, mmu); break;
-	case 0x80:
-	case 0x81:
-	case 0x82:
-	case 0x83:
-	case 0x84:
-	case 0x85:
-	case 0x86:
-	case 0x87:
+	case 0x80: add<0x80>(cpu, mmu); break;
+	case 0x81: add<0x81>(cpu, mmu); break;
+	case 0x82: add<0x82>(cpu, mmu); break;
+	case 0x83: add<0x83>(cpu, mmu); break;
+	case 0x84: add<0x84>(cpu, mmu); break;
+	case 0x85: add<0x85>(cpu, mmu); break;
+	case 0x86: add<0x86>(cpu, mmu); break;
+	case 0x87: add<0x87>(cpu, mmu); break;
 	case 0x88:
 	case 0x89:
 	case 0x8a:
