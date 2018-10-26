@@ -1,4 +1,5 @@
-#include <catch2/catch.hpp>
+#include "test.h"
+
 #include <sstream>
 
 #include "bios.h"

@@ -4,6 +4,11 @@ set(SOURCES
 	mmu_test.cpp
 	cpu_test.cpp
 	bitref_test.cpp
+	word_test.cpp
+)
+
+include_directories(
+	include/
 )
 
 add_subdirectory(external/catch2)

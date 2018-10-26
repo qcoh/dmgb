@@ -1,4 +1,4 @@
-#include <catch2/catch.hpp>
+#include "test.h"
 
 #include "mmu.h"
 #include "bios.h"
