@@ -27,17 +27,24 @@ SCENARIO("add", "[cpu]") {
 		cpu::cpu c{};
 		u8 m[0x10000] = {0};
 
-		c.a = 12;
-		c.b = 34;
+		rc::PROPERTY("adding to a",
+		[&c, &m](const u8 randa, const u8 randv, const bool randcf) {
+			c.a = randa;
+			c.b = randv;
+			c.c = randv;
+			c.d = randv;
+			c.e = randv;
+			c.h = randv;
+			c.l = randv;
+			m[c.hl] = randv;
+			c.cf = randcf;
 
-		WHEN("adding b to a") {
-			m[c.pc] = 0x80;
+			m[c.pc] = *rc::gen::inRange(0x80, 0x87);
+
 			cpu::step(c, m);
 
-			THEN("the sum is stored in a") {
-				REQUIRE(c.a == 46);
-			}
-		}
+			RC_ASSERT(c.a == static_cast<u8>(randa + randv));
+		});
 	}
 }
 
@@ -46,17 +53,49 @@ SCENARIO("adc", "[cpu]") {
 		cpu::cpu c{};
 		u8 m[0x10000] = {0};
 
-		m[c.pc] = 0x88;
-
-		rc::PROPERTY("adding random b to a with carry",
-		[&c, &m](const u8 randa, const u8 randb, const bool randcf) {
+		rc::PROPERTY("adding to a with carry",
+		[&c, &m](const u8 randa, const u8 randv, const bool randcf) {
 			c.a = randa;
-			c.b = randb;
+			c.b = randv;
+			c.c = randv;
+			c.d = randv;
+			c.e = randv;
+			c.h = randv;
+			c.l = randv;
+			m[c.hl] = randv;
 			c.cf = randcf;
+
+			m[c.pc] = *rc::gen::inRange(0x88, 0x8f);
 
 			cpu::step(c, m);
 
-			RC_ASSERT(c.a == static_cast<u8>(randa + randb + randcf));
+			RC_ASSERT(c.a == static_cast<u8>(randa + randv + randcf));
+		});
+	}
+}
+
+SCENARIO("sub", "[cpu]") {
+	GIVEN("cpu and mmu") {
+		cpu::cpu c{};
+		u8 m[0x10000] = {0};
+
+		rc::PROPERTY("subtracting from a",
+		[&c, &m](const u8 randa, const u8 randv) {
+			c.a = randa;
+			c.b = randv;
+			c.c = randv;
+			c.d = randv;
+			c.e = randv;
+			c.h = randv;
+			c.l = randv;
+			m[c.hl] = randv;
+
+			m[c.pc] = *rc::gen::inRange(0x90, 0x97);
+
+			cpu::step(c, m);
+
+			RC_ASSERT(c.a == static_cast<u8>(randa - randv));
+			RC_ASSERT(c.nf == true);
 		});
 	}
 }
