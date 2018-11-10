@@ -71,6 +71,19 @@ void sub(cpu& cpu, mmu_ref mmu) {
 	cpu.nf = true;
 }
 
+template <u8 Op>
+void sbc(cpu& cpu, mmu_ref mmu) {
+	constexpr u8 Src = (Op & 0x7);
+	const u8 src = reg<Src>(cpu, mmu);
+
+	cpu.hf = (cpu.a & 0xf) < ((src & 0xf) + cpu.cf);
+	int temp = cpu.a - src - cpu.cf;
+	cpu.cf = temp < 0;
+	cpu.a = static_cast<u8>(temp);
+	cpu.zf = cpu.a == 0;
+	cpu.nf = true;
+}
+
 }
 
 void step(cpu& cpu, mmu_ref mmu) noexcept {
@@ -229,14 +242,14 @@ void step(cpu& cpu, mmu_ref mmu) noexcept {
 	case 0x95: sub<0x95>(cpu, mmu); break;
 	case 0x96: sub<0x96>(cpu, mmu); break;
 	case 0x97: sub<0x97>(cpu, mmu); break;
-	case 0x98:
-	case 0x99:
-	case 0x9a:
-	case 0x9b:
-	case 0x9c:
-	case 0x9d:
-	case 0x9e:
-	case 0x9f:
+	case 0x98: sbc<0x98>(cpu, mmu); break;
+	case 0x99: sbc<0x99>(cpu, mmu); break;
+	case 0x9a: sbc<0x9a>(cpu, mmu); break;
+	case 0x9b: sbc<0x9b>(cpu, mmu); break;
+	case 0x9c: sbc<0x9c>(cpu, mmu); break;
+	case 0x9d: sbc<0x9d>(cpu, mmu); break;
+	case 0x9e: sbc<0x9e>(cpu, mmu); break;
+	case 0x9f: sbc<0x9f>(cpu, mmu); break;
 	case 0xa0:
 	case 0xa1:
 	case 0xa2:
