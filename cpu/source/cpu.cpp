@@ -96,6 +96,18 @@ void and_(cpu& cpu, mmu_ref mmu) {
 	cpu.cf = false;
 }
 
+template <u8 Op>
+void xor_(cpu& cpu, mmu_ref mmu) {
+	constexpr u8 Src = (Op & 0x7);
+	const u8 src = reg<Src>(cpu, mmu);
+
+	cpu.a = cpu.a ^ src;
+	cpu.zf = cpu.a == 0;
+	cpu.nf = false;
+	cpu.hf = false;
+	cpu.cf = false;
+}
+
 }
 
 void step(cpu& cpu, mmu_ref mmu) noexcept {
@@ -270,14 +282,14 @@ void step(cpu& cpu, mmu_ref mmu) noexcept {
 	case 0xa5: and_<0xa5>(cpu, mmu); break;
 	case 0xa6: and_<0xa6>(cpu, mmu); break;
 	case 0xa7: and_<0xa7>(cpu, mmu); break;
-	case 0xa8:
-	case 0xa9:
-	case 0xaa:
-	case 0xab:
-	case 0xac:
-	case 0xad:
-	case 0xae:
-	case 0xaf:
+	case 0xa8: xor_<0xa8>(cpu, mmu); break;
+	case 0xa9: xor_<0xa9>(cpu, mmu); break;
+	case 0xaa: xor_<0xaa>(cpu, mmu); break;
+	case 0xab: xor_<0xab>(cpu, mmu); break;
+	case 0xac: xor_<0xac>(cpu, mmu); break;
+	case 0xad: xor_<0xad>(cpu, mmu); break;
+	case 0xae: xor_<0xae>(cpu, mmu); break;
+	case 0xaf: xor_<0xaf>(cpu, mmu); break;
 	case 0xb0:
 	case 0xb1:
 	case 0xb2:
