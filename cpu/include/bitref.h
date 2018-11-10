@@ -4,9 +4,13 @@
 
 namespace cpu {
 
-template <int I, u8 Mask = (1 << I), u8 InvMask = static_cast<u8>(~Mask)>
+template <int I>
 class bitref {
-static_assert(0 <= I && I < 8);
+private:
+	static_assert(0 <= I && I < 8);
+	static constexpr u8 Mask = static_cast<u8>(1 << I);
+	static constexpr u8 InvMask = static_cast<u8>(~Mask);
+
 public:
 	bitref(u8& ref) noexcept : m_ref{ref} {}
 	~bitref() = default;
