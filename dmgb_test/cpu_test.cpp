@@ -126,3 +126,32 @@ SCENARIO("sbc", "[cpu]") {
 		});
 	}
 }
+
+SCENARIO("and", "[cpu]") {
+	GIVEN("cpu and mmu") {
+		cpu::cpu c{};
+		u8 m[0x10000] = {0};
+
+		rc::PROPERTY("bitwise and with a",
+		[&c, &m](const u8 randa, const u8 randv) {
+			c.a = randa;
+			c.b = randv;
+			c.c = randv;
+			c.d = randv;
+			c.e = randv;
+			c.h = randv;
+			c.l = randv;
+			m[c.hl] = randv;
+
+			m[c.pc] = *rc::gen::inRange(0xa0, 0xa7);
+
+			cpu::step(c, m);
+
+			RC_ASSERT(c.a == (randa & randv));
+			RC_ASSERT(c.nf == false);
+			RC_ASSERT(c.hf == true);
+			RC_ASSERT(c.zf == (c.a == 0));
+			RC_ASSERT(c.cf == false);
+		});
+	}
+}
