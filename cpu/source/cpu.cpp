@@ -28,24 +28,35 @@ inline u8& reg(cpu& cpu, mmu_ref mmu) {
 
 template <u8 Op>
 void ld(cpu& cpu, mmu_ref mmu) {
-	constexpr const u8 Dst = (Op >> 3) & 0x7;
-	constexpr const u8 Src = (Op & 0x7);
+	constexpr u8 Dst = (Op >> 3) & 0x7;
+	constexpr u8 Src = (Op & 0x7);
 	reg<Dst>(cpu, mmu) = reg<Src>(cpu, mmu);
 }
 
 template <u8 Op>
 void add(cpu& cpu, mmu_ref mmu) {
-	constexpr const u8 Src = (Op & 0x7);
-
+	constexpr u8 Src = (Op & 0x7);
 	const u8 src = reg<Src>(cpu, mmu);
 
-	cpu.hf = ((cpu.a & 0xf) + src) > 0xf;
-	cpu.cf = (cpu.a + src) > 0xff;
-
-	reg<0x7>(cpu, mmu) += src;
-
+	cpu.hf = ((cpu.a & 0xf) + (src & 0xf)) > 0xf;
+	int temp = cpu.a +  src;
+	cpu.cf = temp > 0xff;
+	cpu.a = static_cast<u8>(temp);
 	cpu.zf = cpu.a == 0;
 	cpu.nf = false;
+}
+
+template <u8 Op>
+void adc(cpu& cpu, mmu_ref mmu) {
+	constexpr u8 Src = (Op & 0x7);
+	const u8 src = reg<Src>(cpu, mmu);
+
+	cpu.hf = ((cpu.a & 0xf) + (src & 0xf) + cpu.cf) > 0xf;
+	int temp = cpu.a + src + cpu.cf;
+	cpu.cf = temp > 0xff;
+	cpu.a = static_cast<u8>(temp);
+	cpu.zf = cpu.a == 0;
+	cpu.nf = 0;
 }
 
 }
@@ -190,14 +201,14 @@ void step(cpu& cpu, mmu_ref mmu) noexcept {
 	case 0x85: add<0x85>(cpu, mmu); break;
 	case 0x86: add<0x86>(cpu, mmu); break;
 	case 0x87: add<0x87>(cpu, mmu); break;
-	case 0x88:
-	case 0x89:
-	case 0x8a:
-	case 0x8b:
-	case 0x8c:
-	case 0x8d:
-	case 0x8e:
-	case 0x8f:
+	case 0x88: adc<0x88>(cpu, mmu); break;
+	case 0x89: adc<0x89>(cpu, mmu); break;
+	case 0x8a: adc<0x8a>(cpu, mmu); break;
+	case 0x8b: adc<0x8b>(cpu, mmu); break;
+	case 0x8c: adc<0x8c>(cpu, mmu); break;
+	case 0x8d: adc<0x8d>(cpu, mmu); break;
+	case 0x8e: adc<0x8e>(cpu, mmu); break;
+	case 0x8f: adc<0x8f>(cpu, mmu); break;
 	case 0x90:
 	case 0x91:
 	case 0x92:

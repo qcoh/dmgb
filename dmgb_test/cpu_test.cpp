@@ -40,3 +40,23 @@ SCENARIO("add", "[cpu]") {
 		}
 	}
 }
+
+SCENARIO("adc", "[cpu]") {
+	GIVEN("cpu and mmu") {
+		cpu::cpu c{};
+		u8 m[0x10000] = {0};
+
+		m[c.pc] = 0x88;
+
+		rc::PROPERTY("adding random b to a with carry",
+		[&c, &m](const u8 randa, const u8 randb, const bool randcf) {
+			c.a = randa;
+			c.b = randb;
+			c.cf = randcf;
+
+			cpu::step(c, m);
+
+			RC_ASSERT(c.a == static_cast<u8>(randa + randb + randcf));
+		});
+	}
+}
