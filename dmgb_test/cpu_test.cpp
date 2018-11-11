@@ -689,3 +689,40 @@ SCENARIO("swap", "[cpu]") {
 		});
 	}
 }
+
+SCENARIO("srl", "[cpu]") {
+	GIVEN("cpu and mmu") {
+		cpu::cpu c{};
+		u8 m[0x10000] = {0};
+
+		rc::PROPERTY("srl",
+		[&c, &m](const u8 randv) {
+			c.a = randv;
+			c.b = randv;
+			c.c = randv;
+			c.d = randv;
+			c.e = randv;
+			c.h = randv;
+			c.l = randv;
+			m[c.hl] = randv;
+
+			c.pc = *rc::gen::suchThat(rc::gen::inRange(0, 10),
+					[&c](int x){ 
+						return x != c.hl && (x+1) != c.hl;
+					});
+
+			m[c.pc] = 0xcb;
+			const u8 cb = *rc::gen::inRange(0x38, 0x3f);
+			m[c.pc + 1] = cb;
+
+			cpu::step(c, m);
+
+			RC_ASSERT(c.cf == !!(randv & 1));
+			RC_ASSERT(c.nf == false);
+			RC_ASSERT(c.hf == false);
+
+			RC_ASSERT(reg(c, m, cb & 0x7) == static_cast<u8>(randv >> 1));
+			RC_ASSERT(c.zf == (reg(c, m, cb & 0x7) == 0));
+		});
+	}
+}
