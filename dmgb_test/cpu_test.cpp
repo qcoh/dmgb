@@ -198,3 +198,32 @@ SCENARIO("xor", "[cpu]") {
 		});
 	}
 }
+
+SCENARIO("or", "[cpu]") {
+	GIVEN("cpu and mmu") {
+		cpu::cpu c{};
+		u8 m[0x10000] = {0};
+
+		rc::PROPERTY("bitwise or with a",
+		[&c, &m](const u8 randa, const u8 randv) {
+			c.a = randa;
+			c.b = randv;
+			c.c = randv;
+			c.d = randv;
+			c.e = randv;
+			c.h = randv;
+			c.l = randv;
+			m[c.hl] = randv;
+
+			m[c.pc] = *rc::gen::inRange(0xb0, 0xb7);
+
+			cpu::step(c, m);
+
+			RC_ASSERT(c.a == (randa | randv));
+			RC_ASSERT(c.nf == false);
+			RC_ASSERT(c.hf == false);
+			RC_ASSERT(c.zf == (c.a == 0));
+			RC_ASSERT(c.cf == false);
+		});
+	}
+}

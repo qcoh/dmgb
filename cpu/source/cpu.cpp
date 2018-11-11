@@ -108,6 +108,19 @@ void xor_(cpu& cpu, mmu_ref mmu) {
 	cpu.cf = false;
 }
 
+template <u8 Op>
+void or_(cpu& cpu, mmu_ref mmu) {
+	constexpr u8 Src = (Op & 0x7);
+	const u8 src = reg<Src>(cpu, mmu);
+
+	cpu.a = cpu.a | src;
+	cpu.zf = cpu.a == 0;
+	cpu.nf = false;
+	cpu.hf = false;
+	cpu.cf = false;
+
+}
+
 }
 
 void step(cpu& cpu, mmu_ref mmu) noexcept {
@@ -290,14 +303,14 @@ void step(cpu& cpu, mmu_ref mmu) noexcept {
 	case 0xad: xor_<0xad>(cpu, mmu); break;
 	case 0xae: xor_<0xae>(cpu, mmu); break;
 	case 0xaf: xor_<0xaf>(cpu, mmu); break;
-	case 0xb0:
-	case 0xb1:
-	case 0xb2:
-	case 0xb3:
-	case 0xb4:
-	case 0xb5:
-	case 0xb6:
-	case 0xb7:
+	case 0xb0: or_<0xb0>(cpu, mmu); break;
+	case 0xb1: or_<0xb1>(cpu, mmu); break;
+	case 0xb2: or_<0xb2>(cpu, mmu); break;
+	case 0xb3: or_<0xb3>(cpu, mmu); break;
+	case 0xb4: or_<0xb4>(cpu, mmu); break;
+	case 0xb5: or_<0xb5>(cpu, mmu); break;
+	case 0xb6: or_<0xb6>(cpu, mmu); break;
+	case 0xb7: or_<0xb7>(cpu, mmu); break;
 	case 0xb8:
 	case 0xb9:
 	case 0xba:
