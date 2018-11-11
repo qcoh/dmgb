@@ -500,3 +500,73 @@ SCENARIO("rlc", "[cpu]") {
 		});
 	}
 }
+
+
+SCENARIO("rrc", "[cpu]") {
+	GIVEN("cpu and mmu") {
+		cpu::cpu c{};
+		u8 m[0x10000] = {0};
+
+		rc::PROPERTY("rrc",
+		[&c, &m](const u8 randv) {
+			c.a = randv;
+			c.b = randv;
+			c.c = randv;
+			c.d = randv;
+			c.e = randv;
+			c.h = randv;
+			c.l = randv;
+			m[c.hl] = randv;
+
+			c.pc = *rc::gen::suchThat(rc::gen::inRange(0, 10),
+					[&c](int x){ 
+						return x != c.hl && (x+1) != c.hl;
+					});
+
+			m[c.pc] = 0xcb;
+			const u8 cb = *rc::gen::inRange(0x8, 0xf);
+			m[c.pc + 1] = cb;
+
+			cpu::step(c, m);
+
+			RC_ASSERT(c.cf == !!(randv & 1));
+			RC_ASSERT(c.nf == false);
+			RC_ASSERT(c.hf == false);
+
+			switch (cb & 0x7) {
+			case 0:
+				RC_ASSERT(c.b == static_cast<u8>((randv >> 1) | (randv << 7)));
+				RC_ASSERT(c.zf == (c.b == 0));
+				break;
+			case 1:
+				RC_ASSERT(c.c == static_cast<u8>((randv >> 1) | (randv << 7)));
+				RC_ASSERT(c.zf == (c.c == 0));
+				break;
+			case 2:
+				RC_ASSERT(c.d == static_cast<u8>((randv >> 1) | (randv << 7)));
+				RC_ASSERT(c.zf == (c.d == 0));
+				break;
+			case 3:
+				RC_ASSERT(c.e == static_cast<u8>((randv >> 1) | (randv << 7)));
+				RC_ASSERT(c.zf == (c.e == 0));
+				break;
+			case 4:
+				RC_ASSERT(c.h == static_cast<u8>((randv >> 1) | (randv << 7)));
+				RC_ASSERT(c.zf == (c.h == 0));
+				break;
+			case 5:
+				RC_ASSERT(c.l == static_cast<u8>((randv >> 1) | (randv << 7)));
+				RC_ASSERT(c.zf == (c.l == 0));
+				break;
+			case 6:
+				RC_ASSERT(m[c.hl] == static_cast<u8>((randv >> 1) | (randv << 7)));
+				RC_ASSERT(c.zf == (m[c.hl] == 0));
+				break;
+			case 7:
+				RC_ASSERT(c.a == static_cast<u8>((randv >> 1) | (randv << 7)));
+				RC_ASSERT(c.zf == (c.a == 0));
+				break;
+			}
+		});
+	}
+}
