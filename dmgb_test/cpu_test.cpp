@@ -44,6 +44,10 @@ SCENARIO("add", "[cpu]") {
 			cpu::step(c, m);
 
 			RC_ASSERT(c.a == static_cast<u8>(randa + randv));
+			RC_ASSERT(c.nf == false);
+			RC_ASSERT(c.zf == (c.a == 0));
+			RC_ASSERT(c.hf == ((randa & 0xf) + (randv & 0xf) > 0xf));
+			RC_ASSERT(c.cf == ((randa + randv) > 0xff));
 		});
 	}
 }
@@ -70,6 +74,10 @@ SCENARIO("adc", "[cpu]") {
 			cpu::step(c, m);
 
 			RC_ASSERT(c.a == static_cast<u8>(randa + randv + randcf));
+			RC_ASSERT(c.nf == false);
+			RC_ASSERT(c.zf == (c.a == 0));
+			RC_ASSERT(c.hf == ((randa & 0xf) + (randv & 0xf) + randcf > 0xf));
+			RC_ASSERT(c.cf == ((randa + randv + randcf) > 0xff));
 		});
 	}
 }
@@ -96,6 +104,9 @@ SCENARIO("sub", "[cpu]") {
 
 			RC_ASSERT(c.a == static_cast<u8>(randa - randv));
 			RC_ASSERT(c.nf == true);
+			RC_ASSERT(c.zf == (c.a == 0));
+			RC_ASSERT(c.hf == ((randa & 0xf) < (randv & 0xf)));
+			RC_ASSERT(c.cf == (randa < randv));
 		});
 	}
 }
@@ -123,6 +134,9 @@ SCENARIO("sbc", "[cpu]") {
 
 			RC_ASSERT(c.a == static_cast<u8>(randa - randv - randcf));
 			RC_ASSERT(c.nf == true);
+			RC_ASSERT(c.zf == (c.a == 0));
+			RC_ASSERT(c.hf == ((randa & 0xf) < (randv & 0xf) + randcf));
+			RC_ASSERT(c.cf == (randa < randv + randcf));
 		});
 	}
 }
