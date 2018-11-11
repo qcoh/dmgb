@@ -165,74 +165,175 @@ void set(cpu& cpu, mmu_ref mmu) {
 	tgt = tgt | Mask;
 }
 
+
+template <u8 Op>
+void rlc(cpu& cpu, mmu_ref mmu) {
+	constexpr u8 Tgt = (Op & 0x7);
+	u8& tgt = reg<Tgt>(cpu, mmu);
+
+	cpu.cf = tgt & (1 << 7);
+	tgt = (tgt << 1) | cpu.cf;
+	cpu.zf = tgt == 0;
+	cpu.nf = false;
+	cpu.hf = false;
+}
+
+template <u8 Op>
+void rrc(cpu& cpu, mmu_ref mmu) {
+	constexpr u8 Tgt = (Op & 0x7);
+	u8& tgt = reg<Tgt>(cpu, mmu);
+
+	cpu.cf = tgt & 1;
+	tgt = (tgt >> 1) | (cpu.cf << 7);
+	cpu.zf = tgt == 0;
+	cpu.nf = false;
+	cpu.hf = false;
+}
+
+template <u8 Op>
+void rl(cpu& cpu, mmu_ref mmu) {
+	constexpr u8 Tgt = (Op & 0x7);
+	u8& tgt = reg<Tgt>(cpu, mmu);
+
+	const bool temp = cpu.cf;
+	cpu.cf = tgt & (1 << 7);
+	tgt = (tgt << 1) | temp;
+	cpu.zf = tgt == 0;
+	cpu.nf = false;
+	cpu.hf = false;
+}
+
+template <u8 Op>
+void rr(cpu& cpu, mmu_ref mmu) {
+	constexpr u8 Tgt = (Op & 0x7);
+	u8& tgt = reg<Tgt>(cpu, mmu);
+
+	const bool temp = cpu.cf;
+	cpu.cf = tgt & 1;
+	tgt = (tgt >> 1) | (temp << 7);
+	cpu.zf = tgt == 0;
+	cpu.nf = false;
+	cpu.hf = false;
+}
+
+template <u8 Op>
+void sla(cpu& cpu, mmu_ref mmu) {
+	constexpr u8 Tgt = (Op & 0x7);
+	u8& tgt = reg<Tgt>(cpu, mmu);
+
+	cpu.cf = tgt & (1 << 7);
+	tgt = tgt << 1;
+	cpu.zf = tgt == 0;
+	cpu.nf = false;
+	cpu.hf = false;
+}
+
+
+template <u8 Op>
+void sra(cpu& cpu, mmu_ref mmu) {
+	constexpr u8 Tgt = (Op & 0x7);
+	u8& tgt = reg<Tgt>(cpu, mmu);
+
+	const u8 temp = tgt & (1 << 7);
+	cpu.cf = tgt & 1;
+	tgt = (tgt >> 1) | temp;
+	cpu.zf = tgt == 0;
+	cpu.nf = false;
+	cpu.hf = false;
+}
+
+template <u8 Op>
+void swap(cpu& cpu, mmu_ref mmu) {
+	constexpr u8 Tgt = (Op & 0x7);
+	u8& tgt = reg<Tgt>(cpu, mmu);
+
+	tgt = (tgt << 4) | (tgt >> 4);
+	cpu.zf = tgt == 0;
+	cpu.nf = false;
+	cpu.hf = false;
+	cpu.cf = false;
+}
+
+template <u8 Op>
+void srl(cpu& cpu, mmu_ref mmu) {
+	constexpr u8 Tgt = (Op & 0x7);
+	u8& tgt = reg<Tgt>(cpu, mmu);
+
+	cpu.cf = tgt & 1;
+	tgt = tgt >> 1;
+	cpu.zf = tgt == 0;
+	cpu.nf = false;
+	cpu.hf = false;
+}
+
 void prefix_cb(cpu& cpu, mmu_ref mmu) {
 	const u8 op = mmu[cpu.pc + 1];
 
 	switch (op) {
-	case 0x0:
-	case 0x1:
-	case 0x2:
-	case 0x3:
-	case 0x4:
-	case 0x5:
-	case 0x6:
-	case 0x7:
-	case 0x8:
-	case 0x9:
-	case 0xa:
-	case 0xb:
-	case 0xc:
-	case 0xd:
-	case 0xe:
-	case 0xf:
-	case 0x10:
-	case 0x11:
-	case 0x12:
-	case 0x13:
-	case 0x14:
-	case 0x15:
-	case 0x16:
-	case 0x17:
-	case 0x18:
-	case 0x19:
-	case 0x1a:
-	case 0x1b:
-	case 0x1c:
-	case 0x1d:
-	case 0x1e:
-	case 0x1f:
-	case 0x20:
-	case 0x21:
-	case 0x22:
-	case 0x23:
-	case 0x24:
-	case 0x25:
-	case 0x26:
-	case 0x27:
-	case 0x28:
-	case 0x29:
-	case 0x2a:
-	case 0x2b:
-	case 0x2c:
-	case 0x2d:
-	case 0x2e:
-	case 0x2f:
-	case 0x30:
-	case 0x31:
-	case 0x32:
-	case 0x33:
-	case 0x34:
-	case 0x35:
-	case 0x36:
-	case 0x37:
-	case 0x38:
-	case 0x39:
-	case 0x3a:
-	case 0x3b:
-	case 0x3c:
-	case 0x3d:
-	case 0x3e:
-	case 0x3f:
+	case 0x0: rlc<0x0>(cpu, mmu); break;
+	case 0x1: rlc<0x1>(cpu, mmu); break;
+	case 0x2: rlc<0x2>(cpu, mmu); break;
+	case 0x3: rlc<0x3>(cpu, mmu); break;
+	case 0x4: rlc<0x4>(cpu, mmu); break;
+	case 0x5: rlc<0x5>(cpu, mmu); break;
+	case 0x6: rlc<0x6>(cpu, mmu); break;
+	case 0x7: rlc<0x7>(cpu, mmu); break;
+	case 0x8: rrc<0x8>(cpu, mmu); break;
+	case 0x9: rrc<0x9>(cpu, mmu); break;
+	case 0xa: rrc<0xa>(cpu, mmu); break;
+	case 0xb: rrc<0xb>(cpu, mmu); break;
+	case 0xc: rrc<0xc>(cpu, mmu); break;
+	case 0xd: rrc<0xd>(cpu, mmu); break;
+	case 0xe: rrc<0xe>(cpu, mmu); break;
+	case 0xf: rrc<0xf>(cpu, mmu); break;
+	case 0x10: rl<0x10>(cpu, mmu); break;
+	case 0x11: rl<0x11>(cpu, mmu); break;
+	case 0x12: rl<0x12>(cpu, mmu); break;
+	case 0x13: rl<0x13>(cpu, mmu); break;
+	case 0x14: rl<0x14>(cpu, mmu); break;
+	case 0x15: rl<0x15>(cpu, mmu); break;
+	case 0x16: rl<0x16>(cpu, mmu); break;
+	case 0x17: rl<0x17>(cpu, mmu); break;
+	case 0x18: rr<0x18>(cpu, mmu); break;
+	case 0x19: rr<0x19>(cpu, mmu); break;
+	case 0x1a: rr<0x1a>(cpu, mmu); break;
+	case 0x1b: rr<0x1b>(cpu, mmu); break;
+	case 0x1c: rr<0x1c>(cpu, mmu); break;
+	case 0x1d: rr<0x1d>(cpu, mmu); break;
+	case 0x1e: rr<0x1e>(cpu, mmu); break;
+	case 0x1f: rr<0x1f>(cpu, mmu); break;
+	case 0x20: sla<0x20>(cpu, mmu); break;
+	case 0x21: sla<0x21>(cpu, mmu); break;
+	case 0x22: sla<0x22>(cpu, mmu); break;
+	case 0x23: sla<0x23>(cpu, mmu); break;
+	case 0x24: sla<0x24>(cpu, mmu); break;
+	case 0x25: sla<0x25>(cpu, mmu); break;
+	case 0x26: sla<0x26>(cpu, mmu); break;
+	case 0x27: sla<0x27>(cpu, mmu); break;
+	case 0x28: sra<0x28>(cpu, mmu); break;
+	case 0x29: sra<0x29>(cpu, mmu); break;
+	case 0x2a: sra<0x2a>(cpu, mmu); break;
+	case 0x2b: sra<0x2b>(cpu, mmu); break;
+	case 0x2c: sra<0x2c>(cpu, mmu); break;
+	case 0x2d: sra<0x2d>(cpu, mmu); break;
+	case 0x2e: sra<0x2e>(cpu, mmu); break;
+	case 0x2f: sra<0x2f>(cpu, mmu); break;
+	case 0x30: swap<0x30>(cpu, mmu); break;
+	case 0x31: swap<0x31>(cpu, mmu); break;
+	case 0x32: swap<0x32>(cpu, mmu); break;
+	case 0x33: swap<0x33>(cpu, mmu); break;
+	case 0x34: swap<0x34>(cpu, mmu); break;
+	case 0x35: swap<0x35>(cpu, mmu); break;
+	case 0x36: swap<0x36>(cpu, mmu); break;
+	case 0x37: swap<0x37>(cpu, mmu); break;
+	case 0x38: srl<0x38>(cpu, mmu); break;
+	case 0x39: srl<0x39>(cpu, mmu); break;
+	case 0x3a: srl<0x3a>(cpu, mmu); break;
+	case 0x3b: srl<0x3b>(cpu, mmu); break;
+	case 0x3c: srl<0x3c>(cpu, mmu); break;
+	case 0x3d: srl<0x3d>(cpu, mmu); break;
+	case 0x3e: srl<0x3e>(cpu, mmu); break;
+	case 0x3f: srl<0x3f>(cpu, mmu); break;
 	case 0x40: bit<0x40>(cpu, mmu); break;
 	case 0x41: bit<0x41>(cpu, mmu); break;
 	case 0x42: bit<0x42>(cpu, mmu); break;
@@ -425,7 +526,6 @@ void prefix_cb(cpu& cpu, mmu_ref mmu) {
 	case 0xfd: set<0xfd>(cpu, mmu); break;
 	case 0xfe: set<0xfe>(cpu, mmu); break;
 	case 0xff: set<0xff>(cpu, mmu); break;
-	default: break;
 	}
 }
 
