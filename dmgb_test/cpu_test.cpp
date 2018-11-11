@@ -39,6 +39,7 @@ SCENARIO("add", "[cpu]") {
 			m[c.hl] = randv;
 			c.cf = randcf;
 
+			c.pc = *rc::gen::distinctFrom(rc::gen::inRange(0, 10), c.hl);
 			m[c.pc] = *rc::gen::inRange(0x80, 0x87);
 
 			cpu::step(c, m);
@@ -69,6 +70,7 @@ SCENARIO("adc", "[cpu]") {
 			m[c.hl] = randv;
 			c.cf = randcf;
 
+			c.pc = *rc::gen::distinctFrom(rc::gen::inRange(0, 10), c.hl);
 			m[c.pc] = *rc::gen::inRange(0x88, 0x8f);
 
 			cpu::step(c, m);
@@ -98,6 +100,7 @@ SCENARIO("sub", "[cpu]") {
 			c.l = randv;
 			m[c.hl] = randv;
 
+			c.pc = *rc::gen::distinctFrom(rc::gen::inRange(0, 10), c.hl);
 			m[c.pc] = *rc::gen::inRange(0x90, 0x97);
 
 			cpu::step(c, m);
@@ -128,6 +131,7 @@ SCENARIO("sbc", "[cpu]") {
 			c.cf = randcf;
 			m[c.hl] = randv;
 
+			c.pc = *rc::gen::distinctFrom(rc::gen::inRange(0, 10), c.hl);
 			m[c.pc] = *rc::gen::inRange(0x98, 0x9f);
 
 			cpu::step(c, m);
@@ -157,6 +161,7 @@ SCENARIO("and", "[cpu]") {
 			c.l = randv;
 			m[c.hl] = randv;
 
+			c.pc = *rc::gen::distinctFrom(rc::gen::inRange(0, 10), c.hl);
 			m[c.pc] = *rc::gen::inRange(0xa0, 0xa7);
 
 			cpu::step(c, m);
@@ -186,6 +191,7 @@ SCENARIO("xor", "[cpu]") {
 			c.l = randv;
 			m[c.hl] = randv;
 
+			c.pc = *rc::gen::distinctFrom(rc::gen::inRange(0, 10), c.hl);
 			m[c.pc] = *rc::gen::inRange(0xa8, 0xaf);
 
 			cpu::step(c, m);
@@ -215,6 +221,7 @@ SCENARIO("or", "[cpu]") {
 			c.l = randv;
 			m[c.hl] = randv;
 
+			c.pc = *rc::gen::distinctFrom(rc::gen::inRange(0, 10), c.hl);
 			m[c.pc] = *rc::gen::inRange(0xb0, 0xb7);
 
 			cpu::step(c, m);
@@ -224,6 +231,202 @@ SCENARIO("or", "[cpu]") {
 			RC_ASSERT(c.hf == false);
 			RC_ASSERT(c.zf == (c.a == 0));
 			RC_ASSERT(c.cf == false);
+		});
+	}
+}
+
+SCENARIO("cp", "[cpu]") {
+	GIVEN("cpu and mmu") {
+		cpu::cpu c{};
+		u8 m[0x10000] = {0};
+
+		rc::PROPERTY("comparing with a",
+		[&c, &m](const u8 randa, const u8 randv) {
+			c.a = randa;
+			c.b = randv;
+			c.c = randv;
+			c.d = randv;
+			c.e = randv;
+			c.h = randv;
+			c.l = randv;
+			m[c.hl] = randv;
+
+			c.pc = *rc::gen::distinctFrom(rc::gen::inRange(0, 10), c.hl);
+			m[c.pc] = *rc::gen::inRange(0xb8, 0xbf);
+
+			cpu::step(c, m);
+
+			RC_ASSERT(c.a == randa);
+			RC_ASSERT(c.nf == true);
+			RC_ASSERT(c.zf == ((randa - randv) == 0));
+			RC_ASSERT(c.hf == ((randa & 0xf) < (randv & 0xf)));
+			RC_ASSERT(c.cf == (randa < randv));
+		});
+
+		rc::PROPERTY("cp is the same as sub without modifying a",
+		[&c, &m](const u8 randa, const u8 randv) {
+			c.a = randa;
+			c.b = randv;
+			c.c = randv;
+			c.d = randv;
+			c.e = randv;
+			c.h = randv;
+			c.l = randv;
+			m[c.hl] = randv;
+
+			c.pc = *rc::gen::distinctFrom(rc::gen::inRange(0, 10), c.hl);
+			m[c.pc] = *rc::gen::inRange(0xb8, 0xbf);
+
+			cpu::step(c, m);
+
+			const bool cf = c.cf;
+			const bool nf = c.nf;
+			const bool hf = c.hf;
+			const bool zf = c.zf;
+
+			c.a = randa;
+			c.b = randv;
+			c.c = randv;
+			c.d = randv;
+			c.e = randv;
+			c.h = randv;
+			c.l = randv;
+			m[c.hl] = randv;
+
+			m[c.pc] = *rc::gen::inRange(0x90, 0x97);
+
+			cpu::step(c, m);
+
+			RC_ASSERT(c.nf == nf);
+			RC_ASSERT(c.zf == zf);
+			RC_ASSERT(c.hf == hf);
+			RC_ASSERT(c.cf == cf);
+		});
+	}
+}
+
+
+SCENARIO("bit", "[cpu]") {
+	GIVEN("cpu and mmu") {
+		cpu::cpu c{};
+		u8 m[0x10000] = {0};
+
+		rc::PROPERTY("test bit",
+		[&c, &m](const u8 randv) {
+			c.a = randv;
+			c.b = randv;
+			c.c = randv;
+			c.d = randv;
+			c.e = randv;
+			c.h = randv;
+			c.l = randv;
+			m[c.hl] = randv;
+
+			c.pc = *rc::gen::suchThat(rc::gen::inRange(0, 10),
+					[&c](int x){ 
+						return x != c.hl && (x+1) != c.hl;
+					});
+
+			m[c.pc] = 0xcb;
+			const u8 cb = *rc::gen::inRange(0x40, 0x7f);
+			m[c.pc + 1] = cb;
+
+			cpu::step(c, m);
+
+			const u8 Index = (cb >> 3) & 0x7;
+			const u8 Mask = 1 << Index;
+
+			RC_ASSERT(c.nf == false);
+			RC_ASSERT(c.hf == true);
+			RC_ASSERT(c.zf == !!(randv & Mask));
+		});
+	}
+}
+
+SCENARIO("res", "[cpu]") {
+	GIVEN("cpu and mmu") {
+		cpu::cpu c{};
+		u8 m[0x10000] = {0};
+
+		rc::PROPERTY("reset bit",
+		[&c, &m](const u8 randv) {
+			c.a = randv;
+			c.b = randv;
+			c.c = randv;
+			c.d = randv;
+			c.e = randv;
+			c.h = randv;
+			c.l = randv;
+			m[c.hl] = randv;
+
+			c.pc = *rc::gen::suchThat(rc::gen::inRange(0, 10),
+					[&c](int x){ 
+						return x != c.hl && (x+1) != c.hl;
+					});
+
+			m[c.pc] = 0xcb;
+			const u8 cb = *rc::gen::inRange(0x80, 0xbf);
+			m[c.pc + 1] = cb;
+
+			cpu::step(c, m);
+
+			const u8 Index = (cb >> 3) & 0x7;
+			const u8 Mask = 1 << Index;
+
+			switch (cb & 0x7) {
+			case 0: RC_ASSERT((c.b & Mask) == 0); break;
+			case 1: RC_ASSERT((c.c & Mask) == 0); break;
+			case 2: RC_ASSERT((c.d & Mask) == 0); break;
+			case 3: RC_ASSERT((c.e & Mask) == 0); break;
+			case 4: RC_ASSERT((c.h & Mask) == 0); break;
+			case 5: RC_ASSERT((c.l & Mask) == 0); break;
+			case 6: RC_ASSERT((m[c.hl] & Mask) == 0); break;
+			case 7: RC_ASSERT((c.a & Mask) == 0); break;
+			}
+		});
+	}
+}
+
+SCENARIO("set", "[cpu]") {
+	GIVEN("cpu and mmu") {
+		cpu::cpu c{};
+		u8 m[0x10000] = {0};
+
+		rc::PROPERTY("set bit",
+		[&c, &m](const u8 randv) {
+			c.a = randv;
+			c.b = randv;
+			c.c = randv;
+			c.d = randv;
+			c.e = randv;
+			c.h = randv;
+			c.l = randv;
+			m[c.hl] = randv;
+
+			c.pc = *rc::gen::suchThat(rc::gen::inRange(0, 10),
+					[&c](int x){ 
+						return x != c.hl && (x+1) != c.hl;
+					});
+
+			m[c.pc] = 0xcb;
+			const u8 cb = *rc::gen::inRange(0xc0, 0xff);
+			m[c.pc + 1] = cb;
+
+			cpu::step(c, m);
+
+			const u8 Index = (cb >> 3) & 0x7;
+			const u8 Mask = 1 << Index;
+
+			switch (cb & 0x7) {
+			case 0: RC_ASSERT((c.b & Mask) != 0); break;
+			case 1: RC_ASSERT((c.c & Mask) != 0); break;
+			case 2: RC_ASSERT((c.d & Mask) != 0); break;
+			case 3: RC_ASSERT((c.e & Mask) != 0); break;
+			case 4: RC_ASSERT((c.h & Mask) != 0); break;
+			case 5: RC_ASSERT((c.l & Mask) != 0); break;
+			case 6: RC_ASSERT((m[c.hl] & Mask) != 0); break;
+			case 7: RC_ASSERT((c.a & Mask) != 0); break;
+			}
 		});
 	}
 }

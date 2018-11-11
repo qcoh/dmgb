@@ -121,6 +121,314 @@ void or_(cpu& cpu, mmu_ref mmu) {
 
 }
 
+
+template <u8 Op>
+void cp(cpu& cpu, mmu_ref mmu) {
+	constexpr u8 Src = (Op & 0x7);
+	const u8 src = reg<Src>(cpu, mmu);
+
+	cpu.zf = (cpu.a - src) == 0;
+	cpu.nf = true;
+	cpu.hf = (cpu.a & 0xf) < (src & 0xf);
+	cpu.cf = cpu.a < src;
+}
+
+
+template <u8 Op>
+void bit(cpu& cpu, mmu_ref mmu) {
+	constexpr u8 Src = (Op & 0x7);
+	const u8 src = reg<Src>(cpu, mmu);
+	constexpr u8 Mask = static_cast<u8>(1 << ((Op >> 3) & 0x7));
+
+	cpu.zf = (src & Mask);
+	cpu.nf = false;
+	cpu.hf = true;
+}
+
+
+template <u8 Op>
+void res(cpu& cpu, mmu_ref mmu) {
+	constexpr u8 Tgt = (Op & 0x7);
+	u8& tgt = reg<Tgt>(cpu, mmu);
+	constexpr u8 Mask = static_cast<u8>(~(1 << ((Op >> 3) & 0x7)));
+
+	tgt = tgt & Mask;
+}
+
+
+template <u8 Op>
+void set(cpu& cpu, mmu_ref mmu) {
+	constexpr u8 Tgt = (Op & 0x7);
+	u8& tgt = reg<Tgt>(cpu, mmu);
+	constexpr u8 Mask = static_cast<u8>(1 << ((Op >> 3) & 0x7));
+
+	tgt = tgt | Mask;
+}
+
+void prefix_cb(cpu& cpu, mmu_ref mmu) {
+	const u8 op = mmu[cpu.pc + 1];
+
+	switch (op) {
+	case 0x0:
+	case 0x1:
+	case 0x2:
+	case 0x3:
+	case 0x4:
+	case 0x5:
+	case 0x6:
+	case 0x7:
+	case 0x8:
+	case 0x9:
+	case 0xa:
+	case 0xb:
+	case 0xc:
+	case 0xd:
+	case 0xe:
+	case 0xf:
+	case 0x10:
+	case 0x11:
+	case 0x12:
+	case 0x13:
+	case 0x14:
+	case 0x15:
+	case 0x16:
+	case 0x17:
+	case 0x18:
+	case 0x19:
+	case 0x1a:
+	case 0x1b:
+	case 0x1c:
+	case 0x1d:
+	case 0x1e:
+	case 0x1f:
+	case 0x20:
+	case 0x21:
+	case 0x22:
+	case 0x23:
+	case 0x24:
+	case 0x25:
+	case 0x26:
+	case 0x27:
+	case 0x28:
+	case 0x29:
+	case 0x2a:
+	case 0x2b:
+	case 0x2c:
+	case 0x2d:
+	case 0x2e:
+	case 0x2f:
+	case 0x30:
+	case 0x31:
+	case 0x32:
+	case 0x33:
+	case 0x34:
+	case 0x35:
+	case 0x36:
+	case 0x37:
+	case 0x38:
+	case 0x39:
+	case 0x3a:
+	case 0x3b:
+	case 0x3c:
+	case 0x3d:
+	case 0x3e:
+	case 0x3f:
+	case 0x40: bit<0x40>(cpu, mmu); break;
+	case 0x41: bit<0x41>(cpu, mmu); break;
+	case 0x42: bit<0x42>(cpu, mmu); break;
+	case 0x43: bit<0x43>(cpu, mmu); break;
+	case 0x44: bit<0x44>(cpu, mmu); break;
+	case 0x45: bit<0x45>(cpu, mmu); break;
+	case 0x46: bit<0x46>(cpu, mmu); break;
+	case 0x47: bit<0x47>(cpu, mmu); break;
+	case 0x48: bit<0x48>(cpu, mmu); break;
+	case 0x49: bit<0x49>(cpu, mmu); break;
+	case 0x4a: bit<0x4a>(cpu, mmu); break;
+	case 0x4b: bit<0x4b>(cpu, mmu); break;
+	case 0x4c: bit<0x4c>(cpu, mmu); break;
+	case 0x4d: bit<0x4d>(cpu, mmu); break;
+	case 0x4e: bit<0x4e>(cpu, mmu); break;
+	case 0x4f: bit<0x4f>(cpu, mmu); break;
+	case 0x50: bit<0x50>(cpu, mmu); break;
+	case 0x51: bit<0x51>(cpu, mmu); break;
+	case 0x52: bit<0x52>(cpu, mmu); break;
+	case 0x53: bit<0x53>(cpu, mmu); break;
+	case 0x54: bit<0x54>(cpu, mmu); break;
+	case 0x55: bit<0x55>(cpu, mmu); break;
+	case 0x56: bit<0x56>(cpu, mmu); break;
+	case 0x57: bit<0x57>(cpu, mmu); break;
+	case 0x58: bit<0x58>(cpu, mmu); break;
+	case 0x59: bit<0x59>(cpu, mmu); break;
+	case 0x5a: bit<0x5a>(cpu, mmu); break;
+	case 0x5b: bit<0x5b>(cpu, mmu); break;
+	case 0x5c: bit<0x5c>(cpu, mmu); break;
+	case 0x5d: bit<0x5d>(cpu, mmu); break;
+	case 0x5e: bit<0x5e>(cpu, mmu); break;
+	case 0x5f: bit<0x5f>(cpu, mmu); break;
+	case 0x60: bit<0x60>(cpu, mmu); break;
+	case 0x61: bit<0x61>(cpu, mmu); break;
+	case 0x62: bit<0x62>(cpu, mmu); break;
+	case 0x63: bit<0x63>(cpu, mmu); break;
+	case 0x64: bit<0x64>(cpu, mmu); break;
+	case 0x65: bit<0x65>(cpu, mmu); break;
+	case 0x66: bit<0x66>(cpu, mmu); break;
+	case 0x67: bit<0x67>(cpu, mmu); break;
+	case 0x68: bit<0x68>(cpu, mmu); break;
+	case 0x69: bit<0x69>(cpu, mmu); break;
+	case 0x6a: bit<0x6a>(cpu, mmu); break;
+	case 0x6b: bit<0x6b>(cpu, mmu); break;
+	case 0x6c: bit<0x6c>(cpu, mmu); break;
+	case 0x6d: bit<0x6d>(cpu, mmu); break;
+	case 0x6e: bit<0x6e>(cpu, mmu); break;
+	case 0x6f: bit<0x6f>(cpu, mmu); break;
+	case 0x70: bit<0x70>(cpu, mmu); break;
+	case 0x71: bit<0x71>(cpu, mmu); break;
+	case 0x72: bit<0x72>(cpu, mmu); break;
+	case 0x73: bit<0x73>(cpu, mmu); break;
+	case 0x74: bit<0x74>(cpu, mmu); break;
+	case 0x75: bit<0x75>(cpu, mmu); break;
+	case 0x76: bit<0x76>(cpu, mmu); break;
+	case 0x77: bit<0x77>(cpu, mmu); break;
+	case 0x78: bit<0x78>(cpu, mmu); break;
+	case 0x79: bit<0x79>(cpu, mmu); break;
+	case 0x7a: bit<0x7a>(cpu, mmu); break;
+	case 0x7b: bit<0x7b>(cpu, mmu); break;
+	case 0x7c: bit<0x7c>(cpu, mmu); break;
+	case 0x7d: bit<0x7d>(cpu, mmu); break;
+	case 0x7e: bit<0x7e>(cpu, mmu); break;
+	case 0x7f: bit<0x7f>(cpu, mmu); break;
+	case 0x80: res<0x80>(cpu, mmu); break;
+	case 0x81: res<0x81>(cpu, mmu); break;
+	case 0x82: res<0x82>(cpu, mmu); break;
+	case 0x83: res<0x83>(cpu, mmu); break;
+	case 0x84: res<0x84>(cpu, mmu); break;
+	case 0x85: res<0x85>(cpu, mmu); break;
+	case 0x86: res<0x86>(cpu, mmu); break;
+	case 0x87: res<0x87>(cpu, mmu); break;
+	case 0x88: res<0x88>(cpu, mmu); break;
+	case 0x89: res<0x89>(cpu, mmu); break;
+	case 0x8a: res<0x8a>(cpu, mmu); break;
+	case 0x8b: res<0x8b>(cpu, mmu); break;
+	case 0x8c: res<0x8c>(cpu, mmu); break;
+	case 0x8d: res<0x8d>(cpu, mmu); break;
+	case 0x8e: res<0x8e>(cpu, mmu); break;
+	case 0x8f: res<0x8f>(cpu, mmu); break;
+	case 0x90: res<0x90>(cpu, mmu); break;
+	case 0x91: res<0x91>(cpu, mmu); break;
+	case 0x92: res<0x92>(cpu, mmu); break;
+	case 0x93: res<0x93>(cpu, mmu); break;
+	case 0x94: res<0x94>(cpu, mmu); break;
+	case 0x95: res<0x95>(cpu, mmu); break;
+	case 0x96: res<0x96>(cpu, mmu); break;
+	case 0x97: res<0x97>(cpu, mmu); break;
+	case 0x98: res<0x98>(cpu, mmu); break;
+	case 0x99: res<0x99>(cpu, mmu); break;
+	case 0x9a: res<0x9a>(cpu, mmu); break;
+	case 0x9b: res<0x9b>(cpu, mmu); break;
+	case 0x9c: res<0x9c>(cpu, mmu); break;
+	case 0x9d: res<0x9d>(cpu, mmu); break;
+	case 0x9e: res<0x9e>(cpu, mmu); break;
+	case 0x9f: res<0x9f>(cpu, mmu); break;
+	case 0xa0: res<0xa0>(cpu, mmu); break;
+	case 0xa1: res<0xa1>(cpu, mmu); break;
+	case 0xa2: res<0xa2>(cpu, mmu); break;
+	case 0xa3: res<0xa3>(cpu, mmu); break;
+	case 0xa4: res<0xa4>(cpu, mmu); break;
+	case 0xa5: res<0xa5>(cpu, mmu); break;
+	case 0xa6: res<0xa6>(cpu, mmu); break;
+	case 0xa7: res<0xa7>(cpu, mmu); break;
+	case 0xa8: res<0xa8>(cpu, mmu); break;
+	case 0xa9: res<0xa9>(cpu, mmu); break;
+	case 0xaa: res<0xaa>(cpu, mmu); break;
+	case 0xab: res<0xab>(cpu, mmu); break;
+	case 0xac: res<0xac>(cpu, mmu); break;
+	case 0xad: res<0xad>(cpu, mmu); break;
+	case 0xae: res<0xae>(cpu, mmu); break;
+	case 0xaf: res<0xaf>(cpu, mmu); break;
+	case 0xb0: res<0xb0>(cpu, mmu); break;
+	case 0xb1: res<0xb1>(cpu, mmu); break;
+	case 0xb2: res<0xb2>(cpu, mmu); break;
+	case 0xb3: res<0xb3>(cpu, mmu); break;
+	case 0xb4: res<0xb4>(cpu, mmu); break;
+	case 0xb5: res<0xb5>(cpu, mmu); break;
+	case 0xb6: res<0xb6>(cpu, mmu); break;
+	case 0xb7: res<0xb7>(cpu, mmu); break;
+	case 0xb8: res<0xb8>(cpu, mmu); break;
+	case 0xb9: res<0xb9>(cpu, mmu); break;
+	case 0xba: res<0xba>(cpu, mmu); break;
+	case 0xbb: res<0xbb>(cpu, mmu); break;
+	case 0xbc: res<0xbc>(cpu, mmu); break;
+	case 0xbd: res<0xbd>(cpu, mmu); break;
+	case 0xbe: res<0xbe>(cpu, mmu); break;
+	case 0xbf: res<0xbf>(cpu, mmu); break;
+	case 0xc0: set<0xc0>(cpu, mmu); break;
+	case 0xc1: set<0xc1>(cpu, mmu); break;
+	case 0xc2: set<0xc2>(cpu, mmu); break;
+	case 0xc3: set<0xc3>(cpu, mmu); break;
+	case 0xc4: set<0xc4>(cpu, mmu); break;
+	case 0xc5: set<0xc5>(cpu, mmu); break;
+	case 0xc6: set<0xc6>(cpu, mmu); break;
+	case 0xc7: set<0xc7>(cpu, mmu); break;
+	case 0xc8: set<0xc8>(cpu, mmu); break;
+	case 0xc9: set<0xc9>(cpu, mmu); break;
+	case 0xca: set<0xca>(cpu, mmu); break;
+	case 0xcb: set<0xcb>(cpu, mmu); break;
+	case 0xcc: set<0xcc>(cpu, mmu); break;
+	case 0xcd: set<0xcd>(cpu, mmu); break;
+	case 0xce: set<0xce>(cpu, mmu); break;
+	case 0xcf: set<0xcf>(cpu, mmu); break;
+	case 0xd0: set<0xd0>(cpu, mmu); break;
+	case 0xd1: set<0xd1>(cpu, mmu); break;
+	case 0xd2: set<0xd2>(cpu, mmu); break;
+	case 0xd3: set<0xd3>(cpu, mmu); break;
+	case 0xd4: set<0xd4>(cpu, mmu); break;
+	case 0xd5: set<0xd5>(cpu, mmu); break;
+	case 0xd6: set<0xd6>(cpu, mmu); break;
+	case 0xd7: set<0xd7>(cpu, mmu); break;
+	case 0xd8: set<0xd8>(cpu, mmu); break;
+	case 0xd9: set<0xd9>(cpu, mmu); break;
+	case 0xda: set<0xda>(cpu, mmu); break;
+	case 0xdb: set<0xdb>(cpu, mmu); break;
+	case 0xdc: set<0xdc>(cpu, mmu); break;
+	case 0xdd: set<0xdd>(cpu, mmu); break;
+	case 0xde: set<0xde>(cpu, mmu); break;
+	case 0xdf: set<0xdf>(cpu, mmu); break;
+	case 0xe0: set<0xe0>(cpu, mmu); break;
+	case 0xe1: set<0xe1>(cpu, mmu); break;
+	case 0xe2: set<0xe2>(cpu, mmu); break;
+	case 0xe3: set<0xe3>(cpu, mmu); break;
+	case 0xe4: set<0xe4>(cpu, mmu); break;
+	case 0xe5: set<0xe5>(cpu, mmu); break;
+	case 0xe6: set<0xe6>(cpu, mmu); break;
+	case 0xe7: set<0xe7>(cpu, mmu); break;
+	case 0xe8: set<0xe8>(cpu, mmu); break;
+	case 0xe9: set<0xe9>(cpu, mmu); break;
+	case 0xea: set<0xea>(cpu, mmu); break;
+	case 0xeb: set<0xeb>(cpu, mmu); break;
+	case 0xec: set<0xec>(cpu, mmu); break;
+	case 0xed: set<0xed>(cpu, mmu); break;
+	case 0xee: set<0xee>(cpu, mmu); break;
+	case 0xef: set<0xef>(cpu, mmu); break;
+	case 0xf0: set<0xf0>(cpu, mmu); break;
+	case 0xf1: set<0xf1>(cpu, mmu); break;
+	case 0xf2: set<0xf2>(cpu, mmu); break;
+	case 0xf3: set<0xf3>(cpu, mmu); break;
+	case 0xf4: set<0xf4>(cpu, mmu); break;
+	case 0xf5: set<0xf5>(cpu, mmu); break;
+	case 0xf6: set<0xf6>(cpu, mmu); break;
+	case 0xf7: set<0xf7>(cpu, mmu); break;
+	case 0xf8: set<0xf8>(cpu, mmu); break;
+	case 0xf9: set<0xf9>(cpu, mmu); break;
+	case 0xfa: set<0xfa>(cpu, mmu); break;
+	case 0xfb: set<0xfb>(cpu, mmu); break;
+	case 0xfc: set<0xfc>(cpu, mmu); break;
+	case 0xfd: set<0xfd>(cpu, mmu); break;
+	case 0xfe: set<0xfe>(cpu, mmu); break;
+	case 0xff: set<0xff>(cpu, mmu); break;
+	default: break;
+	}
+}
+
 }
 
 void step(cpu& cpu, mmu_ref mmu) noexcept {
@@ -311,14 +619,14 @@ void step(cpu& cpu, mmu_ref mmu) noexcept {
 	case 0xb5: or_<0xb5>(cpu, mmu); break;
 	case 0xb6: or_<0xb6>(cpu, mmu); break;
 	case 0xb7: or_<0xb7>(cpu, mmu); break;
-	case 0xb8:
-	case 0xb9:
-	case 0xba:
-	case 0xbb:
-	case 0xbc:
-	case 0xbd:
-	case 0xbe:
-	case 0xbf:
+	case 0xb8: cp<0xb8>(cpu, mmu); break;
+	case 0xb9: cp<0xb9>(cpu, mmu); break;
+	case 0xba: cp<0xba>(cpu, mmu); break;
+	case 0xbb: cp<0xbb>(cpu, mmu); break;
+	case 0xbc: cp<0xbc>(cpu, mmu); break;
+	case 0xbd: cp<0xbd>(cpu, mmu); break;
+	case 0xbe: cp<0xbe>(cpu, mmu); break;
+	case 0xbf: cp<0xbf>(cpu, mmu); break;
 	case 0xc0:
 	case 0xc1:
 	case 0xc2:
@@ -330,7 +638,7 @@ void step(cpu& cpu, mmu_ref mmu) noexcept {
 	case 0xc8:
 	case 0xc9:
 	case 0xca:
-	case 0xcb:
+	case 0xcb: prefix_cb(cpu, mmu); break;
 	case 0xcc:
 	case 0xcd:
 	case 0xce:
