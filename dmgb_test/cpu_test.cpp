@@ -17,6 +17,18 @@ u8& reg(cpu::cpu& c, u8* m, const u8 index) {
 	return c.a;
 }
 
+u16 reg16(const cpu::cpu& c, const u8 index) {
+	if (index == 0) {
+		return c.bc;
+	} else if (index == 1) {
+		return c.de;
+	} else if (index == 2) {
+		return c.hl;
+	} else {
+		return c.sp;
+	}
+}	
+
 SCENARIO("basic lds", "[cpu]") {
 	GIVEN("cpu and mmu_ref with value at register d is 12") {
 		cpu::cpu c{};
@@ -723,6 +735,25 @@ SCENARIO("srl", "[cpu]") {
 
 			RC_ASSERT(reg(c, m, cb & 0x7) == static_cast<u8>(randv >> 1));
 			RC_ASSERT(c.zf == (reg(c, m, cb & 0x7) == 0));
+		});
+	}
+}
+
+SCENARIO("ld_16", "[cpu]") {
+	GIVEN("cpu and mmu") {
+		cpu::cpu c{};
+		u8 m[0x10000] = {0};
+
+		rc::PROPERTY("ld_16",
+		[&c, &m](const u16 randw) {
+			m[c.pc] = *rc::gen::element(0x1, 0x11, 0x21, 0x31);
+
+			m[c.pc+1] = randw & 0xff;
+			m[c.pc+2] = randw >> 8;
+
+			cpu::step(c, m);
+
+			RC_ASSERT(reg16(c, (m[c.pc] >> 4) & 0x3) == randw);
 		});
 	}
 }
