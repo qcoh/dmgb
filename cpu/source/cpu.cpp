@@ -560,6 +560,17 @@ void inc(cpu& cpu, mmu_ref mmu) {
 	cpu.nf = false;
 }
 
+template <u8 Op>
+void dec(cpu& cpu, mmu_ref mmu) {
+	constexpr u8 Tgt = (Op >> 3 ) & 0x7;
+	u8& tgt = reg8<Tgt>(cpu, mmu);
+
+	cpu.hf = (tgt & 0xf) == 0;
+	tgt = tgt - 1;
+	cpu.zf = tgt == 0;
+	cpu.nf = true;
+}
+
 }
 
 void step(cpu& cpu, mmu_ref mmu) noexcept {
@@ -573,7 +584,7 @@ void step(cpu& cpu, mmu_ref mmu) noexcept {
 	case 0x02:
 	case 0x03:	
 	case 0x04: inc<0x04>(cpu, mmu); break;
-	case 0x05:
+	case 0x05: dec<0x05>(cpu, mmu); break;
 	case 0x06:
 	case 0x07:
 	case 0x08:
@@ -581,7 +592,7 @@ void step(cpu& cpu, mmu_ref mmu) noexcept {
 	case 0x0a:
 	case 0x0b:
 	case 0x0c: inc<0x0c>(cpu, mmu); break;
-	case 0x0d:
+	case 0x0d: dec<0x0d>(cpu, mmu); break;
 	case 0x0e:
 	case 0x0f:
 	case 0x10: /* stop, ignore for now */ break;
@@ -589,7 +600,7 @@ void step(cpu& cpu, mmu_ref mmu) noexcept {
 	case 0x12:
 	case 0x13:
 	case 0x14: inc<0x14>(cpu, mmu); break;
-	case 0x15:
+	case 0x15: dec<0x15>(cpu, mmu); break;
 	case 0x16:
 	case 0x17:
 	case 0x18:
@@ -597,7 +608,7 @@ void step(cpu& cpu, mmu_ref mmu) noexcept {
 	case 0x1a:
 	case 0x1b:
 	case 0x1c: inc<0x1c>(cpu, mmu); break;
-	case 0x1d:
+	case 0x1d: dec<0x1d>(cpu, mmu); break;
 	case 0x1e:
 	case 0x1f:
 	case 0x20:
@@ -605,7 +616,7 @@ void step(cpu& cpu, mmu_ref mmu) noexcept {
 	case 0x22:
 	case 0x23:
 	case 0x24: inc<0x24>(cpu, mmu); break;
-	case 0x25:
+	case 0x25: dec<0x25>(cpu, mmu); break;
 	case 0x26:
 	case 0x27:
 	case 0x28:
@@ -613,7 +624,7 @@ void step(cpu& cpu, mmu_ref mmu) noexcept {
 	case 0x2a:
 	case 0x2b:
 	case 0x2c: inc<0x2c>(cpu, mmu); break;
-	case 0x2d:
+	case 0x2d: dec<0x2d>(cpu, mmu); break;
 	case 0x2e:
 	case 0x2f:
 	case 0x30:
@@ -621,7 +632,7 @@ void step(cpu& cpu, mmu_ref mmu) noexcept {
 	case 0x32:
 	case 0x33:
 	case 0x34: inc<0x34>(cpu, mmu); break;
-	case 0x35:
+	case 0x35: dec<0x35>(cpu, mmu); break;
 	case 0x36:
 	case 0x37:
 	case 0x38:
@@ -629,7 +640,7 @@ void step(cpu& cpu, mmu_ref mmu) noexcept {
 	case 0x3a:
 	case 0x3b:
 	case 0x3c: inc<0x3c>(cpu, mmu); break;
-	case 0x3d:
+	case 0x3d: dec<0x3d>(cpu, mmu); break;
 	case 0x3e:
 	case 0x3f:
 	case 0x40: ld<0x40>(cpu, mmu); break;
