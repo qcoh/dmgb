@@ -863,3 +863,25 @@ SCENARIO("dec16", "[cpu]") {
 		});
 	}
 }
+
+
+SCENARIO("ld_d8", "[cpu]") {
+	GIVEN("cpu and mmu") {
+		cpu::cpu c{};
+		u8 m[0x10000] = {0};
+
+		rc::PROPERTY("ld_d8",
+		[&c, &m](const u8 randv) {
+			c.pc = *rc::gen::suchThat(rc::gen::inRange(0, 10),
+					[&c](int x){ 
+						return x != c.hl && (x+1) != c.hl;
+					});
+			m[c.pc] = *rc::gen::element(0x6, 0xe, 0x16, 0x1e, 0x26, 0x2e, 0x36, 0x3e);
+			m[c.pc+1] = randv;
+
+			cpu::step(c, m);
+
+			RC_ASSERT(reg(c, m, (m[c.pc] >> 3) & 0x7) == randv);
+		});
+	}
+}
