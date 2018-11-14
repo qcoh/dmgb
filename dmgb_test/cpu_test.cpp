@@ -821,3 +821,24 @@ SCENARIO("dec", "[cpu]") {
 		});
 	}
 }
+
+SCENARIO("inc16", "[cpu]") {
+	GIVEN("cpu and mmu") {
+		cpu::cpu c{};
+		u8 m[0x10000] = {0};
+
+		rc::PROPERTY("inc16",
+		[&c, &m](const u16 randw) {
+			c.bc = randw;
+			c.de = randw;
+			c.hl = randw;
+			c.sp = randw;
+
+			m[c.pc] = *rc::gen::element(0x3, 0x13, 0x23, 0x33);
+
+			cpu::step(c, m);
+
+			RC_ASSERT(reg16(c, (m[c.pc] >> 4) & 0x3) == (randw+1));
+		});
+	}
+}
