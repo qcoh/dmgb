@@ -576,7 +576,15 @@ void inc16(cpu& cpu) {
 	constexpr u8 Tgt = (Op >> 4 ) & 0x3;
 
 	auto& r16 = reg16<Tgt>(cpu); 
-	r16 = r16 + 1;
+	r16 = static_cast<u16>(r16 + 1);
+}
+
+template <u8 Op>
+void dec16(cpu& cpu) {
+	constexpr u8 Tgt = (Op >> 4 ) & 0x3;
+
+	auto& r16 = reg16<Tgt>(cpu); 
+	r16 = static_cast<u16>(r16 - 1);
 }
 
 }
@@ -598,7 +606,7 @@ void step(cpu& cpu, mmu_ref mmu) noexcept {
 	case 0x08:
 	case 0x09:
 	case 0x0a:
-	case 0x0b:
+	case 0x0b: dec16<0x0b>(cpu); break;
 	case 0x0c: inc<0x0c>(cpu, mmu); break;
 	case 0x0d: dec<0x0d>(cpu, mmu); break;
 	case 0x0e:
@@ -614,7 +622,7 @@ void step(cpu& cpu, mmu_ref mmu) noexcept {
 	case 0x18:
 	case 0x19:
 	case 0x1a:
-	case 0x1b:
+	case 0x1b: dec16<0x1b>(cpu); break;
 	case 0x1c: inc<0x1c>(cpu, mmu); break;
 	case 0x1d: dec<0x1d>(cpu, mmu); break;
 	case 0x1e:
@@ -630,7 +638,7 @@ void step(cpu& cpu, mmu_ref mmu) noexcept {
 	case 0x28:
 	case 0x29:
 	case 0x2a:
-	case 0x2b:
+	case 0x2b: dec16<0x2b>(cpu); break;
 	case 0x2c: inc<0x2c>(cpu, mmu); break;
 	case 0x2d: dec<0x2d>(cpu, mmu); break;
 	case 0x2e:
@@ -646,7 +654,7 @@ void step(cpu& cpu, mmu_ref mmu) noexcept {
 	case 0x38:
 	case 0x39:
 	case 0x3a:
-	case 0x3b:
+	case 0x3b: dec16<0x3b>(cpu); break;
 	case 0x3c: inc<0x3c>(cpu, mmu); break;
 	case 0x3d: dec<0x3d>(cpu, mmu); break;
 	case 0x3e:
