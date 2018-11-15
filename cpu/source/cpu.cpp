@@ -38,6 +38,20 @@ auto& reg16(cpu& cpu) {
 	}
 }
 
+// when pushing and popping af is used instead of sp
+template <u8 Sel>
+auto& regp(cpu& cpu) {
+	if constexpr (Sel == 0) {
+		return cpu.bc;
+	} else if (Sel == 1) {
+		return cpu.de;
+	} else if (Sel == 2) {
+		return cpu.hl;
+	} else {
+		return cpu.af;
+	}
+}
+
 template <u8 Op>
 void ld(cpu& cpu, mmu_ref mmu) {
 	constexpr u8 Dst = (Op >> 3) & 0x7;
@@ -593,6 +607,25 @@ void ld_d8(cpu& cpu, mmu_ref mmu, const u8 imb) {
 	reg8<Tgt>(cpu, mmu) = imb;
 }
 
+template <u8 Op>
+void pop(cpu& cpu, mmu_ref mmu) {
+	constexpr u8 Tgt = (Op >> 5);
+	auto& r16 = regp<Tgt>(cpu);
+
+	r16 = static_cast<u16>(mmu[cpu.sp] | (mmu[cpu.sp+1] >> 8));
+	cpu.sp += 2;
+}
+
+template <u8 Op>
+void push(cpu& cpu, mmu_ref mmu) {
+	constexpr u8 Tgt = (Op >> 5);
+	const auto r16 = regp<Tgt>(cpu);
+
+	mmu[cpu.sp-1] = static_cast<u8>(r16 >> 8);
+	mmu[cpu.sp-2] = static_cast<u8>(r16);
+	cpu.sp -= 2;
+}
+
 }
 
 void step(cpu& cpu, mmu_ref mmu) noexcept {
@@ -795,11 +828,11 @@ void step(cpu& cpu, mmu_ref mmu) noexcept {
 	case 0xbe: cp<0xbe>(cpu, mmu); break;
 	case 0xbf: cp<0xbf>(cpu, mmu); break;
 	case 0xc0:
-	case 0xc1:
+	case 0xc1: pop<0xc1>(cpu, mmu); break;
 	case 0xc2:
 	case 0xc3:
 	case 0xc4:
-	case 0xc5:
+	case 0xc5: push<0xc5>(cpu, mmu); break;
 	case 0xc6:
 	case 0xc7:
 	case 0xc8:
@@ -811,51 +844,51 @@ void step(cpu& cpu, mmu_ref mmu) noexcept {
 	case 0xce:
 	case 0xcf:
 	case 0xd0:
-	case 0xd1:
+	case 0xd1: pop<0xd1>(cpu, mmu); break;
 	case 0xd2:
-	case 0xd3:
+	case 0xd3: /* undefined */ break;
 	case 0xd4:
-	case 0xd5:
+	case 0xd5: push<0xd5>(cpu, mmu); break;
 	case 0xd6:
 	case 0xd7:
 	case 0xd8:
 	case 0xd9:
 	case 0xda:
-	case 0xdb:
+	case 0xdb: /* undefined */ break;
 	case 0xdc:
-	case 0xdd:
+	case 0xdd: /* undefined */ break;
 	case 0xde:
 	case 0xdf:
 	case 0xe0:
-	case 0xe1:
+	case 0xe1: pop<0xe1>(cpu, mmu); break;
 	case 0xe2:
-	case 0xe3:
-	case 0xe4:
-	case 0xe5:
+	case 0xe3: /* undefined */ break;
+	case 0xe4: /* undefined */ break;
+	case 0xe5: push<0xe5>(cpu, mmu); break;
 	case 0xe6:
 	case 0xe7:
 	case 0xe8:
 	case 0xe9:
 	case 0xea:
-	case 0xeb:
-	case 0xec:
-	case 0xed:
+	case 0xeb: /* undefined */ break;
+	case 0xec: /* undefined */ break;
+	case 0xed: /* undefined */ break;
 	case 0xee:
 	case 0xef:
 	case 0xf0:
-	case 0xf1:
+	case 0xf1: pop<0xf1>(cpu, mmu); break;
 	case 0xf2:
 	case 0xf3:
-	case 0xf4:
-	case 0xf5:
+	case 0xf4: /* undefined */ break;
+	case 0xf5: push<0xf5>(cpu, mmu); break;
 	case 0xf6:
 	case 0xf7:
 	case 0xf8:
 	case 0xf9:
 	case 0xfa:
 	case 0xfb:
-	case 0xfc:
-	case 0xfd:
+	case 0xfc: /* undefined */ break;
+	case 0xfd: /* undefined */ break;
 	case 0xfe:
 	case 0xff:
 		   break;
