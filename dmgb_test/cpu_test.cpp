@@ -1007,3 +1007,23 @@ SCENARIO("ld_a_m16", "[cpu]") {
 		});
 	}
 }
+
+SCENARIO("ldi_hl_a", "[cpu]") {
+	GIVEN("cpu and mmu") {
+		cpu::cpu c{};
+		u8 m[0x10000] = {0};
+
+		rc::PROPERTY("ldi_hl_a",
+		[&c, &m](const u16 randhl, const u8 randa) {
+			c.hl = randhl;
+			c.a = randa;
+
+			m[c.pc] = 0x22;
+
+			cpu::step(c, m);
+
+			RC_ASSERT(m[randhl] == randa);
+			RC_ASSERT(c.hl == (randhl + 1));
+		});
+	}
+}
