@@ -961,3 +961,24 @@ SCENARIO("add_hl", "[cpu]") {
 		});
 	}
 }
+
+
+SCENARIO("ld_m16_a", "[cpu]") {
+	GIVEN("cpu and mmu") {
+		cpu::cpu c{};
+		u8 m[0x10000] = {0};
+
+		rc::PROPERTY("ld_m16_a",
+		[&c, &m](const u16 randw, const u8 randa) {
+			c.bc = randw;
+			c.de = randw;
+			c.a = randa;
+
+			m[c.pc] = *rc::gen::element(0x02, 0x12);
+
+			cpu::step(c, m);
+
+			RC_ASSERT(m[randw] == randa);
+		});
+	}
+}
