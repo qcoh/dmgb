@@ -670,6 +670,11 @@ void ldi_a_hl(cpu& cpu, mmu_ref mmu) {
 	cpu.hl = static_cast<u16>(cpu.hl + 1);
 }
 
+void ldd_a_hl(cpu& cpu, mmu_ref mmu) {
+	cpu.a = mmu[cpu.hl];
+	cpu.hl = static_cast<u16>(cpu.hl - 1);
+}
+
 }
 
 void step(cpu& cpu, mmu_ref mmu) noexcept {
@@ -737,7 +742,7 @@ void step(cpu& cpu, mmu_ref mmu) noexcept {
 	case 0x37:
 	case 0x38:
 	case 0x39: add_hl<0x39>(cpu); break;
-	case 0x3a:
+	case 0x3a: ldd_a_hl(cpu, mmu); break;
 	case 0x3b: dec16<0x3b>(cpu); break;
 	case 0x3c: inc<0x3c>(cpu, mmu); break;
 	case 0x3d: dec<0x3d>(cpu, mmu); break;

@@ -1073,3 +1073,28 @@ SCENARIO("ldi_a_hl", "[cpu]") {
 		});
 	}
 }
+
+SCENARIO("ldd_a_hl", "[cpu]") {
+	GIVEN("cpu and mmu") {
+		cpu::cpu c{};
+		u8 m[0x10000] = {0};
+
+		rc::PROPERTY("ldd_a_hl",
+		[&c, &m](const u16 randhl, const u8 randa) {
+			c.hl = randhl;
+			m[c.hl] = randa;
+
+			c.pc = *rc::gen::suchThat(rc::gen::inRange(10, 20),
+					[&c](int x){ 
+						return x != c.hl;
+					});
+
+			m[c.pc] = 0x3a;
+
+			cpu::step(c, m);
+
+			RC_ASSERT(c.a == randa);
+			RC_ASSERT(c.hl == static_cast<u16>(randhl - 1));
+		});
+	}
+}
