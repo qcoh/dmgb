@@ -924,31 +924,40 @@ SCENARIO("pop", "[cpu]") {
 	}
 }
 
-SCENARIO("push", "[cpu]") {
+SCENARIO("add_hl", "[cpu]") {
 	GIVEN("cpu and mmu") {
 		cpu::cpu c{};
 		u8 m[0x10000] = {0};
 
-		rc::PROPERTY("push",
-		[&c, &m](const u8 randw) {
-			c.sp = *rc::gen::suchThat(rc::gen::arbitrary<u16>(),
-					[](u16 x) { return x > 2; });
+		rc::PROPERTY("add_hl",
+		[&c, &m](const u16 randhl, const u16 randw) {
 			c.bc = randw;
 			c.de = randw;
-			c.hl = randw;
-			c.af = randw;
+			c.hl = randhl;
+			c.sp = randw;
 
-			c.pc = *rc::gen::suchThat(rc::gen::inRange(10, 20),
-					[&c](int x){ 
-						return (x-1) != c.sp && (x-2) != c.sp;
-					});
-
-			m[c.pc] = *rc::gen::element(0xc5, 0xd5, 0xe5, 0xf5);
+			m[c.pc] = *rc::gen::element(0x09, 0x19, 0x39);
 
 			cpu::step(c, m);
 
-			RC_ASSERT(m[c.sp] == (randw & 0xff));
-			RC_ASSERT(m[c.sp+1] == (randw >> 8));
+			RC_ASSERT(c.nf == false);
+			RC_ASSERT(c.hf == ((randhl & 0xfff) + (randw & 0xfff) > 0xfff));
+			RC_ASSERT(c.cf == ((randhl + randw) > 0xffff));
+			RC_ASSERT(c.hl == static_cast<u16>(randhl + randw)); 
+		});
+
+		rc::PROPERTY("add_hl_hl",
+		[&c, &m](const u16 randhl) {
+			c.hl = randhl;
+
+			m[c.pc] = 0x29;
+
+			cpu::step(c, m);
+
+			RC_ASSERT(c.nf == false);
+			RC_ASSERT(c.hf == ((randhl & 0xfff) + (randhl & 0xfff) > 0xfff));
+			RC_ASSERT(c.cf == ((randhl + randhl) > 0xffff));
+			RC_ASSERT(c.hl == static_cast<u16>(randhl + randhl)); 
 		});
 	}
 }

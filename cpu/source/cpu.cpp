@@ -626,6 +626,18 @@ void push(cpu& cpu, mmu_ref mmu) {
 	cpu.sp -= 2;
 }
 
+template <u8 Op>
+void add_hl(cpu& cpu) {
+	constexpr u8 Src = (Op >> 4) & 0x3;
+	const u16 src = reg16<Src>(cpu);
+
+	cpu.nf = false;
+	cpu.hf = ((cpu.hl & 0xfff) + (src & 0xfff)) > 0xfff;
+	cpu.cf = (cpu.hl + src) > 0xffff;
+
+	cpu.hl = static_cast<u16>(cpu.hl + src);
+}
+
 }
 
 void step(cpu& cpu, mmu_ref mmu) noexcept {
@@ -644,7 +656,7 @@ void step(cpu& cpu, mmu_ref mmu) noexcept {
 	case 0x06: ld_d8<0x06>(cpu, mmu, imb); break;
 	case 0x07:
 	case 0x08:
-	case 0x09:
+	case 0x09: add_hl<0x09>(cpu); break;
 	case 0x0a:
 	case 0x0b: dec16<0x0b>(cpu); break;
 	case 0x0c: inc<0x0c>(cpu, mmu); break;
@@ -660,7 +672,7 @@ void step(cpu& cpu, mmu_ref mmu) noexcept {
 	case 0x16: ld_d8<0x16>(cpu, mmu, imb); break;
 	case 0x17:
 	case 0x18:
-	case 0x19:
+	case 0x19: add_hl<0x19>(cpu); break;
 	case 0x1a:
 	case 0x1b: dec16<0x1b>(cpu); break;
 	case 0x1c: inc<0x1c>(cpu, mmu); break;
@@ -676,7 +688,7 @@ void step(cpu& cpu, mmu_ref mmu) noexcept {
 	case 0x26: ld_d8<0x26>(cpu, mmu, imb); break;
 	case 0x27:
 	case 0x28:
-	case 0x29:
+	case 0x29: add_hl<0x29>(cpu); break;
 	case 0x2a:
 	case 0x2b: dec16<0x2b>(cpu); break;
 	case 0x2c: inc<0x2c>(cpu, mmu); break;
@@ -692,7 +704,7 @@ void step(cpu& cpu, mmu_ref mmu) noexcept {
 	case 0x36: ld_d8<0x36>(cpu, mmu, imb); break;
 	case 0x37:
 	case 0x38:
-	case 0x39:
+	case 0x39: add_hl<0x39>(cpu); break;
 	case 0x3a:
 	case 0x3b: dec16<0x3b>(cpu); break;
 	case 0x3c: inc<0x3c>(cpu, mmu); break;
