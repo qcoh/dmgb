@@ -923,3 +923,32 @@ SCENARIO("pop", "[cpu]") {
 		});
 	}
 }
+
+SCENARIO("push", "[cpu]") {
+	GIVEN("cpu and mmu") {
+		cpu::cpu c{};
+		u8 m[0x10000] = {0};
+
+		rc::PROPERTY("push",
+		[&c, &m](const u8 randw) {
+			c.sp = *rc::gen::suchThat(rc::gen::arbitrary<u16>(),
+					[](u16 x) { return x > 2; });
+			c.bc = randw;
+			c.de = randw;
+			c.hl = randw;
+			c.af = randw;
+
+			c.pc = *rc::gen::suchThat(rc::gen::inRange(10, 20),
+					[&c](int x){ 
+						return (x-1) != c.sp && (x-2) != c.sp;
+					});
+
+			m[c.pc] = *rc::gen::element(0xc5, 0xd5, 0xe5, 0xf5);
+
+			cpu::step(c, m);
+
+			RC_ASSERT(m[c.sp] == (randw & 0xff));
+			RC_ASSERT(m[c.sp+1] == (randw >> 8));
+		});
+	}
+}

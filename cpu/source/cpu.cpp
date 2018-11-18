@@ -609,7 +609,7 @@ void ld_d8(cpu& cpu, mmu_ref mmu, const u8 imb) {
 
 template <u8 Op>
 void pop(cpu& cpu, mmu_ref mmu) {
-	constexpr u8 Tgt = (Op >> 5);
+	constexpr u8 Tgt = (Op >> 6);
 	auto& r16 = regp<Tgt>(cpu);
 
 	r16 = static_cast<u16>(mmu[cpu.sp] | (mmu[cpu.sp+1] >> 8));
@@ -618,7 +618,7 @@ void pop(cpu& cpu, mmu_ref mmu) {
 
 template <u8 Op>
 void push(cpu& cpu, mmu_ref mmu) {
-	constexpr u8 Tgt = (Op >> 5);
+	constexpr u8 Tgt = (Op >> 6);
 	const auto r16 = regp<Tgt>(cpu);
 
 	mmu[cpu.sp-1] = static_cast<u8>(r16 >> 8);
