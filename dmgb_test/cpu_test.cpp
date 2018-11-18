@@ -982,3 +982,28 @@ SCENARIO("ld_m16_a", "[cpu]") {
 		});
 	}
 }
+
+
+SCENARIO("ld_a_m16", "[cpu]") {
+	GIVEN("cpu and mmu") {
+		cpu::cpu c{};
+		u8 m[0x10000] = {0};
+
+		rc::PROPERTY("ld_a_m16",
+		[&c, &m](const u16 randw, const u8 randa) {
+			m[randw] = randa;
+			c.bc = randw;
+			c.de = randw;
+
+			c.pc = *rc::gen::suchThat(rc::gen::inRange(10, 20),
+					[&c](int x){ 
+						return x != c.bc && x != c.de;
+					});
+			m[c.pc] = *rc::gen::element(0x0a, 0x1a);
+
+			cpu::step(c, m);
+
+			RC_ASSERT(c.a == randa);
+		});
+	}
+}
