@@ -1,3 +1,5 @@
+find_package(Catch2 REQUIRED)
+
 set(SOURCES
 	bios_test.cpp
 	dmgb_test.cpp
@@ -11,7 +13,6 @@ include_directories(
 	include/
 )
 
-#add_subdirectory(external/catch2)
 add_subdirectory(external/rapidcheck)
 
 add_executable(${PROJECT_NAME}_test ${SOURCES})
@@ -21,8 +22,9 @@ target_link_libraries(${PROJECT_NAME}_test
 	mmu
 	utl
 	rapidcheck
-	#Catch2::Catch2
 	CONAN_PKG::catch2
 )
 
-add_test(Test dmgb_test)
+include(CTest)
+include(Catch)
+catch_discover_tests(${PROJECT_NAME}_test)
