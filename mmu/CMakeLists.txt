@@ -15,3 +15,5 @@ target_include_directories(
 	mmu
 	PUBLIC "${INCLUDE_DIR}"
 )
+
+target_link_libraries(mmu CONAN_PKG::gsl_microsoft)

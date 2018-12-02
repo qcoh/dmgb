@@ -8,18 +8,19 @@ set(CMAKE_CXX_EXTENSIONS OFF)
 set(CMAKE_BUILD_TYPE Debug)
 add_compile_options(-Wall -Wextra -pedantic -Werror)
 
+include(${CMAKE_BINARY_DIR}/conanbuildinfo.cmake)
+conan_basic_setup(TARGETS)
+
 # hmpf
 include_directories(
 	${PROJECT_SOURCE_DIR}/cpu/include
 	${PROJECT_SOURCE_DIR}/mmu/include
 	${PROJECT_SOURCE_DIR}/utl/include
-	${PROJECT_SOURCE_DIR}/external/gsl/include
 )
 
 add_subdirectory(cpu)
 add_subdirectory(mmu)
 add_subdirectory(utl)
-add_subdirectory(external/gsl)
 
 enable_testing()
 add_subdirectory(dmgb_test)
