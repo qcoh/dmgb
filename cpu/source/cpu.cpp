@@ -1,28 +1,24 @@
 #include "cpu.h"
+#include "rw_ref.h"
 
 namespace cpu {
 
 namespace {
 
-template <u8 Sel>
-u8& reg8(cpu& cpu, mmu_ref mmu) {
-	const u8 masked = Sel;
-	if constexpr (masked == 0) {
-		return cpu.b;
-	} else if (masked == 1) {
-		return cpu.c;
-	} else if (masked == 2) {
-		return cpu.d;
-	} else if (masked == 3) {
-		return cpu.e;
-	} else if (masked == 4) {
-		return cpu.h;
-	} else if (masked == 5) {
-		return cpu.l;
-	} else if (masked == 6) {
-		return mmu[cpu.hl];
-	} else /* if (masked == 7) */ {
-		return cpu.a;
+template <u8 Masked>
+decltype(auto) reg8(cpu& cpu, mmu_ref mmu) {
+	if constexpr (Masked == 6) {
+		return rw_ref<mmu_ref>{mmu, cpu.hl};
+	} else {
+		u8& ref =
+			(Masked == 0) ? cpu.b :
+			(Masked == 1) ? cpu.c :
+			(Masked == 2) ? cpu.d :
+			(Masked == 3) ? cpu.e :
+			(Masked == 4) ? cpu.h :
+			(Masked == 5) ? cpu.l :
+					cpu.a;
+		return ref;
 	}
 }
 
@@ -56,7 +52,8 @@ template <u8 Op>
 void ld(cpu& cpu, mmu_ref mmu) {
 	constexpr u8 Dst = (Op >> 3) & 0x7;
 	constexpr u8 Src = (Op & 0x7);
-	reg8<Dst>(cpu, mmu) = reg8<Src>(cpu, mmu);
+	decltype(auto) lhs = reg8<Dst>(cpu, mmu);
+	lhs = reg8<Src>(cpu, mmu);
 }
 
 template <u8 Op>
@@ -175,7 +172,7 @@ void bit(cpu& cpu, mmu_ref mmu) {
 template <u8 Op>
 void res(cpu& cpu, mmu_ref mmu) {
 	constexpr u8 Tgt = (Op & 0x7);
-	u8& tgt = reg8<Tgt>(cpu, mmu);
+	decltype(auto) tgt = reg8<Tgt>(cpu, mmu);
 	constexpr u8 Mask = static_cast<u8>(~(1 << ((Op >> 3) & 0x7)));
 
 	tgt = tgt & Mask;
@@ -185,7 +182,7 @@ void res(cpu& cpu, mmu_ref mmu) {
 template <u8 Op>
 void set(cpu& cpu, mmu_ref mmu) {
 	constexpr u8 Tgt = (Op & 0x7);
-	u8& tgt = reg8<Tgt>(cpu, mmu);
+	decltype(auto) tgt = reg8<Tgt>(cpu, mmu);
 	constexpr u8 Mask = static_cast<u8>(1 << ((Op >> 3) & 0x7));
 
 	tgt = tgt | Mask;
@@ -195,7 +192,7 @@ void set(cpu& cpu, mmu_ref mmu) {
 template <u8 Op>
 void rlc(cpu& cpu, mmu_ref mmu) {
 	constexpr u8 Tgt = (Op & 0x7);
-	u8& tgt = reg8<Tgt>(cpu, mmu);
+	decltype(auto) tgt = reg8<Tgt>(cpu, mmu);
 
 	cpu.cf = tgt & (1 << 7);
 	tgt = (tgt << 1) | cpu.cf;
@@ -207,7 +204,7 @@ void rlc(cpu& cpu, mmu_ref mmu) {
 template <u8 Op>
 void rrc(cpu& cpu, mmu_ref mmu) {
 	constexpr u8 Tgt = (Op & 0x7);
-	u8& tgt = reg8<Tgt>(cpu, mmu);
+	decltype(auto) tgt = reg8<Tgt>(cpu, mmu);
 
 	cpu.cf = tgt & 1;
 	tgt = (tgt >> 1) | (cpu.cf << 7);
@@ -219,7 +216,7 @@ void rrc(cpu& cpu, mmu_ref mmu) {
 template <u8 Op>
 void rl(cpu& cpu, mmu_ref mmu) {
 	constexpr u8 Tgt = (Op & 0x7);
-	u8& tgt = reg8<Tgt>(cpu, mmu);
+	decltype(auto) tgt = reg8<Tgt>(cpu, mmu);
 
 	const bool temp = cpu.cf;
 	cpu.cf = tgt & (1 << 7);
@@ -232,7 +229,7 @@ void rl(cpu& cpu, mmu_ref mmu) {
 template <u8 Op>
 void rr(cpu& cpu, mmu_ref mmu) {
 	constexpr u8 Tgt = (Op & 0x7);
-	u8& tgt = reg8<Tgt>(cpu, mmu);
+	decltype(auto) tgt = reg8<Tgt>(cpu, mmu);
 
 	const bool temp = cpu.cf;
 	cpu.cf = tgt & 1;
@@ -245,7 +242,7 @@ void rr(cpu& cpu, mmu_ref mmu) {
 template <u8 Op>
 void sla(cpu& cpu, mmu_ref mmu) {
 	constexpr u8 Tgt = (Op & 0x7);
-	u8& tgt = reg8<Tgt>(cpu, mmu);
+	decltype(auto) tgt = reg8<Tgt>(cpu, mmu);
 
 	cpu.cf = tgt & (1 << 7);
 	tgt = tgt << 1;
@@ -258,7 +255,7 @@ void sla(cpu& cpu, mmu_ref mmu) {
 template <u8 Op>
 void sra(cpu& cpu, mmu_ref mmu) {
 	constexpr u8 Tgt = (Op & 0x7);
-	u8& tgt = reg8<Tgt>(cpu, mmu);
+	decltype(auto) tgt = reg8<Tgt>(cpu, mmu);
 
 	const u8 temp = tgt & (1 << 7);
 	cpu.cf = tgt & 1;
@@ -271,7 +268,7 @@ void sra(cpu& cpu, mmu_ref mmu) {
 template <u8 Op>
 void swap(cpu& cpu, mmu_ref mmu) {
 	constexpr u8 Tgt = (Op & 0x7);
-	u8& tgt = reg8<Tgt>(cpu, mmu);
+	decltype(auto) tgt = reg8<Tgt>(cpu, mmu);
 
 	tgt = (tgt << 4) | (tgt >> 4);
 	cpu.zf = tgt == 0;
@@ -283,7 +280,7 @@ void swap(cpu& cpu, mmu_ref mmu) {
 template <u8 Op>
 void srl(cpu& cpu, mmu_ref mmu) {
 	constexpr u8 Tgt = (Op & 0x7);
-	u8& tgt = reg8<Tgt>(cpu, mmu);
+	decltype(auto) tgt = reg8<Tgt>(cpu, mmu);
 
 	cpu.cf = tgt & 1;
 	tgt = tgt >> 1;
@@ -566,7 +563,7 @@ void ld_d16(cpu& cpu, const u16 imw) {
 template <u8 Op>
 void inc(cpu& cpu, mmu_ref mmu) {
 	constexpr u8 Tgt = (Op >> 3 ) & 0x7;
-	u8& tgt = reg8<Tgt>(cpu, mmu);
+	decltype(auto) tgt = reg8<Tgt>(cpu, mmu);
 
 	cpu.hf = (tgt & 0xf) == 0xf;
 	tgt = tgt + 1;
@@ -577,7 +574,7 @@ void inc(cpu& cpu, mmu_ref mmu) {
 template <u8 Op>
 void dec(cpu& cpu, mmu_ref mmu) {
 	constexpr u8 Tgt = (Op >> 3 ) & 0x7;
-	u8& tgt = reg8<Tgt>(cpu, mmu);
+	decltype(auto) tgt = reg8<Tgt>(cpu, mmu);
 
 	cpu.hf = (tgt & 0xf) == 0;
 	tgt = tgt - 1;
@@ -604,7 +601,8 @@ void dec16(cpu& cpu) {
 template <u8 Op>
 void ld_d8(cpu& cpu, mmu_ref mmu, const u8 imb) {
 	constexpr u8 Tgt = (Op >> 3 ) & 0x7;
-	reg8<Tgt>(cpu, mmu) = imb;
+	decltype(auto) lhs = reg8<Tgt>(cpu, mmu);
+	lhs = imb;
 }
 
 template <u8 Op>
