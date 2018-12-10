@@ -1098,3 +1098,86 @@ SCENARIO("ldd_a_hl", "[cpu]") {
 		});
 	}
 }
+
+SCENARIO("rst", "[cpu]") {
+	GIVEN("cpu and mmu") {
+		cpu::cpu c{};
+		u8 m[0x10000] = {0};
+
+		rc::PROPERTY("rst 0x0",
+		[&c, &m]() {
+			c.sp = *rc::gen::suchThat(rc::gen::arbitrary<u16>(), 
+					[](u16 x) {
+				       		return x > 2;
+					});
+
+			const u16 oldpc = *rc::gen::arbitrary<u16>();
+			c.pc = oldpc;
+
+			m[c.pc] = 0xc7; 
+
+			cpu::step(c, m);
+
+			RC_ASSERT(c.pc == 0x00);
+			RC_ASSERT(m[c.sp] == (oldpc&0xff));
+			RC_ASSERT(m[c.sp+1] == (oldpc>>8));
+		});
+
+		rc::PROPERTY("rst 0x10",
+		[&c, &m]() {
+			c.sp = *rc::gen::suchThat(rc::gen::arbitrary<u16>(), 
+					[](u16 x) {
+				       		return x > 2;
+					});
+
+			const u16 oldpc = *rc::gen::arbitrary<u16>();
+			c.pc = oldpc;
+
+			m[c.pc] = 0xd7; 
+
+			cpu::step(c, m);
+
+			RC_ASSERT(c.pc == 0x10);
+			RC_ASSERT(m[c.sp] == (oldpc&0xff));
+			RC_ASSERT(m[c.sp+1] == (oldpc>>8));
+		});
+
+		rc::PROPERTY("rst 0x20",
+		[&c, &m]() {
+			c.sp = *rc::gen::suchThat(rc::gen::arbitrary<u16>(), 
+					[](u16 x) {
+				       		return x > 2;
+					});
+
+			const u16 oldpc = *rc::gen::arbitrary<u16>();
+			c.pc = oldpc;
+
+			m[c.pc] = 0xe7; 
+
+			cpu::step(c, m);
+
+			RC_ASSERT(c.pc == 0x20);
+			RC_ASSERT(m[c.sp] == (oldpc&0xff));
+			RC_ASSERT(m[c.sp+1] == (oldpc>>8));
+		});
+
+		rc::PROPERTY("rst 0x30",
+		[&c, &m]() {
+			c.sp = *rc::gen::suchThat(rc::gen::arbitrary<u16>(), 
+					[](u16 x) {
+				       		return x > 2;
+					});
+
+			const u16 oldpc = *rc::gen::arbitrary<u16>();
+			c.pc = oldpc;
+
+			m[c.pc] = 0xf7; 
+
+			cpu::step(c, m);
+
+			RC_ASSERT(c.pc == 0x30);
+			RC_ASSERT(m[c.sp] == (oldpc&0xff));
+			RC_ASSERT(m[c.sp+1] == (oldpc>>8));
+		});
+	}
+}

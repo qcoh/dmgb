@@ -673,6 +673,14 @@ void ldd_a_hl(cpu& cpu, mmu_ref mmu) {
 	cpu.hl = static_cast<u16>(cpu.hl - 1);
 }
 
+template <u8 F>
+void rst(cpu& cpu, mmu_ref mmu) {
+	mmu[cpu.sp-1] = static_cast<u8>(cpu.pc >> 8);
+	mmu[cpu.sp-2] = static_cast<u8>(cpu.pc);
+	cpu.pc = F;
+	cpu.sp = static_cast<u16>(cpu.sp-2);
+}
+
 }
 
 void step(cpu& cpu, mmu_ref mmu) noexcept {
@@ -881,7 +889,7 @@ void step(cpu& cpu, mmu_ref mmu) noexcept {
 	case 0xc4:
 	case 0xc5: push<0xc5>(cpu, mmu); break;
 	case 0xc6:
-	case 0xc7:
+	case 0xc7: rst<0x00>(cpu, mmu); break;
 	case 0xc8:
 	case 0xc9:
 	case 0xca:
@@ -897,7 +905,7 @@ void step(cpu& cpu, mmu_ref mmu) noexcept {
 	case 0xd4:
 	case 0xd5: push<0xd5>(cpu, mmu); break;
 	case 0xd6:
-	case 0xd7:
+	case 0xd7: rst<0x10>(cpu, mmu); break;
 	case 0xd8:
 	case 0xd9:
 	case 0xda:
@@ -913,7 +921,7 @@ void step(cpu& cpu, mmu_ref mmu) noexcept {
 	case 0xe4: /* undefined */ break;
 	case 0xe5: push<0xe5>(cpu, mmu); break;
 	case 0xe6:
-	case 0xe7:
+	case 0xe7: rst<0x20>(cpu, mmu); break;
 	case 0xe8:
 	case 0xe9:
 	case 0xea:
@@ -929,7 +937,7 @@ void step(cpu& cpu, mmu_ref mmu) noexcept {
 	case 0xf4: /* undefined */ break;
 	case 0xf5: push<0xf5>(cpu, mmu); break;
 	case 0xf6:
-	case 0xf7:
+	case 0xf7: rst<0x30>(cpu, mmu); break;
 	case 0xf8:
 	case 0xf9:
 	case 0xfa:
