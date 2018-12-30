@@ -10,7 +10,7 @@ namespace mmu {
 class bios {
 	using bios_ref = const u8 (&) [0x100];
 public:
-	bios(std::istream&);
+	explicit bios(std::istream&);
 
 	operator bios_ref () const noexcept;
 

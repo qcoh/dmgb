@@ -9,7 +9,7 @@ class bios;
 // mmu wires bios, cartridge, ram and IO registers together.
 class mmu {
 public:
-	mmu(const bios&);
+	explicit mmu(const bios&);
 	~mmu();
 
 	mmu(const mmu&) = delete;
