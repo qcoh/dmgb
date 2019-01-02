@@ -6,6 +6,7 @@ set(SOURCES
 	${INCLUDE_DIR}/read_writer.h
 	${INCLUDE_DIR}/rw_ref.h
 	${INCLUDE_DIR}/bitref.h
+	${INCLUDE_DIR}/cpu_mmu.h
 
 	${SOURCE_DIR}/cpu.cpp
 )
