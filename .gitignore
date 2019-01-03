@@ -8,3 +8,5 @@ bios.bin
 /references
 /notes
 .vscode
+*.bin
+*.gb

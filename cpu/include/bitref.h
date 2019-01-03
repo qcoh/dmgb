@@ -12,7 +12,7 @@ class bitref {
   static constexpr u8 InvMask = static_cast<u8>(~Mask);
 
  public:
-  bitref(u8& ref) noexcept : m_ref{ref} {}
+  explicit bitref(u8& ref) noexcept : m_ref{ref} {}
   ~bitref() = default;
 
   bitref(const bitref&) = delete;
