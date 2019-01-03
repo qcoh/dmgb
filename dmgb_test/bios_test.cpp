@@ -19,7 +19,7 @@ SCENARIO("creating a bios object", "[bios]") {
       THEN("the bios' contents equal the file's") {
         bool allAreEqual = true;
         for (int i = 0; i < 0x100; i++) {
-          if (b[i] != ' ') {
+          if (b.read(i) != ' ') {
             allAreEqual = false;
           }
         }

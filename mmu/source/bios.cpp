@@ -4,6 +4,8 @@
 #include <iterator>
 #include <stdexcept>
 
+#include <assert.h>
+
 namespace mmu {
 
 bios::bios(std::istream& f) {
@@ -25,8 +27,14 @@ bios::bios(std::istream& f) {
   }
 }
 
-bios::operator bios_ref() const noexcept {
-  return m_data;
+u8 bios::read(const u16 addr) const noexcept {
+  assert(addr < 0x100);
+  return m_data[addr];
+}
+
+void bios::write(const u16 addr, const u8 v) noexcept {
+  assert(addr < 0x100);
+  m_data[addr] = v;
 }
 
 }  // namespace mmu
