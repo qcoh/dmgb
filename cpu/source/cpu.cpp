@@ -1,5 +1,4 @@
 #include "cpu.h"
-#include "cpu_mmu.h"
 #include "rw_ref.h"
 
 namespace cpu {

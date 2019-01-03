@@ -3,10 +3,11 @@
 #include "bitref.h"
 #include "types.h"
 #include "word.h"
+#include "read_writer.h"
 
 namespace cpu {
 
-struct mmu;
+using mmu = read_writer;
 
 // `cpu` comprises the state (program counter, stack pointer and registers) of
 // the Sharp LR35902.

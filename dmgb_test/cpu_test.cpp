@@ -1,11 +1,10 @@
 #include "test.h"
 
 #include "cpu.h"
-#include "cpu_mmu.h"
 #include "mmu.h"
 #include "rw_ref.h"
 
-struct test_mmu : public cpu::mmu {
+struct test_mmu : public read_writer {
   u8& operator[](const u16 addr) noexcept { return m_mmu[addr]; }
 
   u8 read(const u16 addr) const noexcept override { return m_mmu[addr]; }

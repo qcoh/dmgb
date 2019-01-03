@@ -85,4 +85,9 @@ mmu::operator mmu_ref() const noexcept {
   return m_ref_wrapper->arr;
 }
 
+u8 mmu::read(const u16) const noexcept {
+  return 0;
+}
+void mmu::write(const u16, const u8) noexcept {}
+
 }  // namespace mmu
