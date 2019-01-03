@@ -6,7 +6,7 @@
 #include "rapidcheck.h"
 
 // rapidcheck
-// https://github.com/emil-e/rapidcheck/blob/master/extras/catch/include/rapidcheck/catch.h 
+// https://github.com/emil-e/rapidcheck/blob/master/extras/catch/include/rapidcheck/catch.h
 
 namespace rc {
 template <typename Testable>
@@ -41,5 +41,4 @@ void PROPERTY(const std::string& description, Testable&& testable) {
     }
   }
 }
-}
-
+}  // namespace rc

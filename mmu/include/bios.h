@@ -8,14 +8,15 @@ namespace mmu {
 
 // bios provides mmu with the bios, the "initialization program" run at startup.
 class bios {
-	using bios_ref = const u8 (&) [0x100];
-public:
-	explicit bios(std::istream&);
+  using bios_ref = const u8 (&)[0x100];
 
-	operator bios_ref () const noexcept;
+ public:
+  explicit bios(std::istream&);
 
-private:
-	u8 m_data[0x100] = {0U};
+  operator bios_ref() const noexcept;
+
+ private:
+  u8 m_data[0x100] = {0U};
 };
 
-}
+}  // namespace mmu
