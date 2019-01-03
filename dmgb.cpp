@@ -18,7 +18,9 @@ int main() {
     mmu::mmu mmu{bios, rom};
     cpu::cpu cpu{};
 
-    (void)cpu;
+    for (;;) {
+      cpu::step(cpu, mmu);
+    }
   } catch (std::exception& e) {
     std::cerr << e.what() << '\n';
   }
