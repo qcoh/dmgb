@@ -11,7 +11,7 @@ struct test_mapper : public read_writer {
   void write(const u16 addr, const u8 v) noexcept override { m_data[addr] = v; }
 };
 
-SCENARIO("writing to mapper", "[mmu]") {
+SCENARIO("writing to mmu", "[mmu]") {
   GIVEN("an mmu object") {
     read_writer* bios = nullptr;
     test_mapper mapper{};
@@ -21,6 +21,18 @@ SCENARIO("writing to mapper", "[mmu]") {
       m.write(0x101, 123);
 
       THEN("value at 0x101 is 123") { REQUIRE(m.read(0x101) == 123); }
+    }
+
+    WHEN("writing to vram") {
+      m.write(0x8123, 0xab);
+
+      THEN("value at 0x8123 is 0xab") { REQUIRE(m.read(0x8123) == 0xab); }
+    }
+
+    WHEN("writing to wram") {
+      m.write(0xc000, 0xfa);
+
+      THEN("value at 0xc000 is 0xfa") { REQUIRE(m.read(0xc000) == 0xfa); }
     }
   }
 }

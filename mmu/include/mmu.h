@@ -24,6 +24,9 @@ class mmu : public read_writer {
   bool m_bios_mode = true;
   const read_writer& m_bios;
   read_writer& m_mapper;
+
+  u8 m_vram[0x2000] = {0};
+  u8 m_wram[0x1000] = {0};
 };
 
 }  // namespace mmu

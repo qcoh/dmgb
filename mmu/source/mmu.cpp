@@ -30,11 +30,14 @@ u8 mmu::read(const u16 addr) const noexcept {
     case 0x8:
     case 0x9:
       // character ram, bg map data
+      return m_vram[addr - 0x8000];
     case 0xa:
     case 0xb:
       // cartridge ram
+      return m_mapper.read(addr);
     case 0xc:
       // internal ram bank 0
+      return m_wram[addr - 0xc000];
     case 0xd:
       // internal ram bank 1 - 7 (CGB)
     case 0xe:
@@ -56,21 +59,28 @@ void mmu::write(const u16 addr, const u8 v) noexcept {
     case 0x6:
     case 0x7:
       // rom bank 0, 1 - ???
-      return m_mapper.write(addr, v);
+      m_mapper.write(addr, v);
+      return;
     case 0x8:
     case 0x9:
       // character ram, bg map data
+      m_vram[addr - 0x8000] = v;
+      return;
     case 0xa:
     case 0xb:
       // cartridge ram
+      m_mapper.write(addr, v);
+      return;
     case 0xc:
       // internal ram bank 0
+      m_wram[addr - 0xc000] = v;
+      return;
     case 0xd:
-      // internal ram bank 1 - 7 (CGB)
+    // internal ram bank 1 - 7 (CGB)
     case 0xe:
     case 0xf:
-      // echo ram, object attribute memory, io registers, zero page, interrupt
-      // enable flag
+      // echo ram, object attribute memory, io registers, zero page,
+      // interrupt enable flag
       break;
   }
 }
