@@ -1,7 +1,7 @@
 #pragma once
 
-#include "types.h"
 #include "read_writer.h"
+#include "types.h"
 
 namespace mmu {
 
@@ -10,8 +10,7 @@ class bios;
 // mmu wires bios, cartridge, ram and IO registers together.
 class mmu : public read_writer {
  public:
-  explicit mmu(const bios&);
-  ~mmu();
+  mmu(const read_writer&, read_writer&);
 
   mmu(const mmu&) = delete;
   mmu& operator=(const mmu&) = delete;
@@ -21,15 +20,10 @@ class mmu : public read_writer {
   u8 read(const u16) const noexcept override;
   void write(const u16, const u8) noexcept override;
 
-  operator mmu_ref() const noexcept;
-
  private:
-  u8* m_mmu;
-
-  struct ref_wrapper;
-  ref_wrapper* m_ref_wrapper;
-
-  const bios& m_bios;
+  bool m_bios_mode = true;
+  const read_writer& m_bios;
+  read_writer& m_mapper;
 };
 
 }  // namespace mmu
