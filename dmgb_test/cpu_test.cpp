@@ -99,7 +99,6 @@ SCENARIO("add", "[cpu]") {
                    c.cf = randcf;
 
                    c.pc = *rc::gen::distinctFrom(rc::gen::inRange(0, 10), c.hl);
-                   const auto original_pc = c.pc;
                    m[c.pc] = *rc::gen::inRange(0x80, 0x87);
 
                    cpu::step(c, m);
@@ -109,7 +108,6 @@ SCENARIO("add", "[cpu]") {
                    RC_ASSERT(c.zf == (c.a == 0));
                    RC_ASSERT(c.hf == ((randa & 0xf) + (randv & 0xf) > 0xf));
                    RC_ASSERT(c.cf == ((randa + randv) > 0xff));
-                   RC_ASSERT(c.pc == (original_pc + 1));
                  });
 
     WHEN("adding register to a") {
@@ -130,7 +128,7 @@ SCENARIO("add", "[cpu]") {
         REQUIRE(c.cycles == 8);
       }
     }
-    }
+  }
 }
 
 SCENARIO("adc", "[cpu]") {
@@ -162,6 +160,25 @@ SCENARIO("adc", "[cpu]") {
           RC_ASSERT(c.hf == ((randa & 0xf) + (randv & 0xf) + randcf > 0xf));
           RC_ASSERT(c.cf == ((randa + randv + randcf) > 0xff));
         });
+
+    WHEN("adcing register to a") {
+      m[c.pc] = 0x80;
+      cpu::step(c, m);
+
+      THEN("pc increments by 1, cycles by 4") {
+        REQUIRE(c.pc == 1);
+        REQUIRE(c.cycles == 4);
+      }
+    }
+    WHEN("adcing memory to a") {
+      m[c.pc] = 0x86;
+      cpu::step(c, m);
+
+      THEN("pc increments by 1, cycles by 8") {
+        REQUIRE(c.pc == 1);
+        REQUIRE(c.cycles == 8);
+      }
+    }
   }
 }
 

@@ -97,6 +97,11 @@ void adc(cpu& cpu, mmu& mmu) {
   cpu.a = static_cast<u8>(temp);
   cpu.zf = cpu.a == 0;
   cpu.nf = 0;
+
+  constexpr u16 length = 1;
+  cpu.pc += length;
+  constexpr u32 timing = (Src == 0x6) ? 8 : 4;
+  cpu.cycles += timing;
 }
 
 template <u8 Op>
