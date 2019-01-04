@@ -5,6 +5,10 @@ namespace cpu {
 
 namespace {
 
+const u8 lengths[256] = {
+
+};
+
 template <u8 Masked>
 decltype(auto) reg8(cpu& cpu, mmu& mmu) {
   if constexpr (Masked == 6) {
@@ -57,6 +61,11 @@ void ld(cpu& cpu, mmu& mmu) {
   constexpr u8 Src = (Op & 0x7);
   decltype(auto) lhs = reg8<Dst>(cpu, mmu);
   lhs = reg8<Src>(cpu, mmu);
+
+  constexpr u16 length = 1;
+  cpu.pc += length;
+  constexpr u32 timing = (Dst == 0x6 || Src == 0x6) ? 8 : 4;
+  cpu.cycles += timing;
 }
 
 template <u8 Op>
@@ -70,6 +79,11 @@ void add(cpu& cpu, mmu& mmu) {
   cpu.a = static_cast<u8>(temp);
   cpu.zf = cpu.a == 0;
   cpu.nf = false;
+
+  constexpr u16 length = 1;
+  cpu.pc += length;
+  constexpr u32 timing = (Src == 0x6) ? 8 : 4;
+  cpu.cycles += timing;
 }
 
 template <u8 Op>

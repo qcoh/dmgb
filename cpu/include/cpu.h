@@ -1,9 +1,9 @@
 #pragma once
 
 #include "bitref.h"
+#include "read_writer.h"
 #include "types.h"
 #include "word.h"
-#include "read_writer.h"
 
 namespace cpu {
 
@@ -33,6 +33,8 @@ struct cpu {
 
   u16 pc{0U};
   u16 sp{0xffffU};
+
+  u32 cycles{0U};
 };
 
 void step(cpu&, mmu&) noexcept;
