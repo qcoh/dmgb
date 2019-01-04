@@ -149,6 +149,11 @@ void and_(cpu& cpu, mmu& mmu) {
   cpu.nf = false;
   cpu.hf = true;
   cpu.cf = false;
+
+  constexpr u16 length = 1;
+  cpu.pc += length;
+  constexpr u32 timing = (Src == 0x6) ? 8 : 4;
+  cpu.cycles += timing;
 }
 
 template <u8 Op>
@@ -161,6 +166,11 @@ void xor_(cpu& cpu, mmu& mmu) {
   cpu.nf = false;
   cpu.hf = false;
   cpu.cf = false;
+
+  constexpr u16 length = 1;
+  cpu.pc += length;
+  constexpr u32 timing = (Src == 0x6) ? 8 : 4;
+  cpu.cycles += timing;
 }
 
 template <u8 Op>
@@ -173,6 +183,11 @@ void or_(cpu& cpu, mmu& mmu) {
   cpu.nf = false;
   cpu.hf = false;
   cpu.cf = false;
+
+  constexpr u16 length = 1;
+  cpu.pc += length;
+  constexpr u32 timing = (Src == 0x6) ? 8 : 4;
+  cpu.cycles += timing;
 }
 
 template <u8 Op>
@@ -184,6 +199,11 @@ void cp(cpu& cpu, mmu& mmu) {
   cpu.nf = true;
   cpu.hf = (cpu.a & 0xf) < (src & 0xf);
   cpu.cf = cpu.a < src;
+
+  constexpr u16 length = 1;
+  cpu.pc += length;
+  constexpr u32 timing = (Src == 0x6) ? 8 : 4;
+  cpu.cycles += timing;
 }
 
 template <u8 Op>

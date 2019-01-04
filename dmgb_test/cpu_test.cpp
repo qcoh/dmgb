@@ -309,7 +309,7 @@ SCENARIO("and", "[cpu]") {
                    RC_ASSERT(c.cf == false);
                  });
 
-    WHEN("anding register to a") {
+    WHEN("anding register with a") {
       m[c.pc] = 0xa0;
       cpu::step(c, m);
 
@@ -318,7 +318,7 @@ SCENARIO("and", "[cpu]") {
         REQUIRE(c.cycles == 4);
       }
     }
-    WHEN("anding memory to a") {
+    WHEN("anding memory with a") {
       m[c.pc] = 0xa6;
       cpu::step(c, m);
 
@@ -357,6 +357,25 @@ SCENARIO("xor", "[cpu]") {
                    RC_ASSERT(c.zf == (c.a == 0));
                    RC_ASSERT(c.cf == false);
                  });
+
+    WHEN("xoring register with a") {
+      m[c.pc] = 0xa8;
+      cpu::step(c, m);
+
+      THEN("pc increments by 1, cycles by 4") {
+        REQUIRE(c.pc == 1);
+        REQUIRE(c.cycles == 4);
+      }
+    }
+    WHEN("xoring memory with a") {
+      m[c.pc] = 0xae;
+      cpu::step(c, m);
+
+      THEN("pc increments by 1, cycles by 8") {
+        REQUIRE(c.pc == 1);
+        REQUIRE(c.cycles == 8);
+      }
+    }
   }
 }
 
@@ -386,6 +405,25 @@ SCENARIO("or", "[cpu]") {
       RC_ASSERT(c.zf == (c.a == 0));
       RC_ASSERT(c.cf == false);
     });
+
+    WHEN("oring register with a") {
+      m[c.pc] = 0xb0;
+      cpu::step(c, m);
+
+      THEN("pc increments by 1, cycles by 4") {
+        REQUIRE(c.pc == 1);
+        REQUIRE(c.cycles == 4);
+      }
+    }
+    WHEN("oring memory with a") {
+      m[c.pc] = 0xb6;
+      cpu::step(c, m);
+
+      THEN("pc increments by 1, cycles by 8") {
+        REQUIRE(c.pc == 1);
+        REQUIRE(c.cycles == 8);
+      }
+    }
   }
 }
 
@@ -455,6 +493,25 @@ SCENARIO("cp", "[cpu]") {
                    RC_ASSERT(c.hf == hf);
                    RC_ASSERT(c.cf == cf);
                  });
+
+    WHEN("comparing register with a") {
+      m[c.pc] = 0xb8;
+      cpu::step(c, m);
+
+      THEN("pc increments by 1, cycles by 4") {
+        REQUIRE(c.pc == 1);
+        REQUIRE(c.cycles == 4);
+      }
+    }
+    WHEN("comparing memory with a") {
+      m[c.pc] = 0xbe;
+      cpu::step(c, m);
+
+      THEN("pc increments by 1, cycles by 8") {
+        REQUIRE(c.pc == 1);
+        REQUIRE(c.cycles == 8);
+      }
+    }
   }
 }
 
