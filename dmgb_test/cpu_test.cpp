@@ -162,7 +162,7 @@ SCENARIO("adc", "[cpu]") {
         });
 
     WHEN("adcing register to a") {
-      m[c.pc] = 0x80;
+      m[c.pc] = 0x88;
       cpu::step(c, m);
 
       THEN("pc increments by 1, cycles by 4") {
@@ -171,7 +171,7 @@ SCENARIO("adc", "[cpu]") {
       }
     }
     WHEN("adcing memory to a") {
-      m[c.pc] = 0x86;
+      m[c.pc] = 0x8e;
       cpu::step(c, m);
 
       THEN("pc increments by 1, cycles by 8") {
@@ -211,7 +211,7 @@ SCENARIO("sub", "[cpu]") {
                  });
 
     WHEN("subtracting register from a") {
-      m[c.pc] = 0x80;
+      m[c.pc] = 0x90;
       cpu::step(c, m);
 
       THEN("pc increments by 1, cycles by 4") {
@@ -220,7 +220,7 @@ SCENARIO("sub", "[cpu]") {
       }
     }
     WHEN("subtracting memory from a") {
-      m[c.pc] = 0x86;
+      m[c.pc] = 0x96;
       cpu::step(c, m);
 
       THEN("pc increments by 1, cycles by 8") {
@@ -259,6 +259,25 @@ SCENARIO("sbc", "[cpu]") {
                    RC_ASSERT(c.hf == ((randa & 0xf) < (randv & 0xf) + randcf));
                    RC_ASSERT(c.cf == (randa < randv + randcf));
                  });
+
+    WHEN("sbctracting register from a") {
+      m[c.pc] = 0x98;
+      cpu::step(c, m);
+
+      THEN("pc increments by 1, cycles by 4") {
+        REQUIRE(c.pc == 1);
+        REQUIRE(c.cycles == 4);
+      }
+    }
+    WHEN("sbctracting memory from a") {
+      m[c.pc] = 0x9e;
+      cpu::step(c, m);
+
+      THEN("pc increments by 1, cycles by 8") {
+        REQUIRE(c.pc == 1);
+        REQUIRE(c.cycles == 8);
+      }
+    }
   }
 }
 
@@ -289,6 +308,25 @@ SCENARIO("and", "[cpu]") {
                    RC_ASSERT(c.zf == (c.a == 0));
                    RC_ASSERT(c.cf == false);
                  });
+
+    WHEN("anding register to a") {
+      m[c.pc] = 0xa0;
+      cpu::step(c, m);
+
+      THEN("pc increments by 1, cycles by 4") {
+        REQUIRE(c.pc == 1);
+        REQUIRE(c.cycles == 4);
+      }
+    }
+    WHEN("anding memory to a") {
+      m[c.pc] = 0xa6;
+      cpu::step(c, m);
+
+      THEN("pc increments by 1, cycles by 8") {
+        REQUIRE(c.pc == 1);
+        REQUIRE(c.cycles == 8);
+      }
+    }
   }
 }
 
