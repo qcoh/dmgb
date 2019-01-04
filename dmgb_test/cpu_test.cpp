@@ -209,6 +209,25 @@ SCENARIO("sub", "[cpu]") {
                    RC_ASSERT(c.hf == ((randa & 0xf) < (randv & 0xf)));
                    RC_ASSERT(c.cf == (randa < randv));
                  });
+
+    WHEN("subtracting register from a") {
+      m[c.pc] = 0x80;
+      cpu::step(c, m);
+
+      THEN("pc increments by 1, cycles by 4") {
+        REQUIRE(c.pc == 1);
+        REQUIRE(c.cycles == 4);
+      }
+    }
+    WHEN("subtracting memory from a") {
+      m[c.pc] = 0x86;
+      cpu::step(c, m);
+
+      THEN("pc increments by 1, cycles by 8") {
+        REQUIRE(c.pc == 1);
+        REQUIRE(c.cycles == 8);
+      }
+    }
   }
 }
 
