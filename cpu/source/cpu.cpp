@@ -1,6 +1,8 @@
 #include "cpu.h"
 #include "rw_ref.h"
 
+#include <stdint.h>
+
 namespace cpu {
 
 namespace {
@@ -1250,6 +1252,11 @@ void rst(cpu& cpu, mmu& mmu) {
   cpu.sp = static_cast<u16>(cpu.sp - 2);
 }
 
+void jr(cpu& cpu, const bool condition, u8 imb) {
+  cpu.pc += (condition) ? static_cast<int8_t>(imb) : 2;
+  cpu.cycles += (condition) ? 12 : 8;
+}
+
 }  // namespace
 
 void step(cpu& cpu, mmu& mmu) noexcept {
@@ -1324,6 +1331,8 @@ void step(cpu& cpu, mmu& mmu) noexcept {
       break;
     case 0x17:
     case 0x18:
+      jr(cpu, true, imb);
+      break;
     case 0x19:
       add_hl<0x19>(cpu);
       break;
@@ -1344,6 +1353,8 @@ void step(cpu& cpu, mmu& mmu) noexcept {
       break;
     case 0x1f:
     case 0x20:
+      jr(cpu, !cpu.zf, imb);
+      break;
     case 0x21:
       ld_d16<0x21>(cpu, imw);
       break;
@@ -1364,6 +1375,8 @@ void step(cpu& cpu, mmu& mmu) noexcept {
       break;
     case 0x27:
     case 0x28:
+      jr(cpu, cpu.zf, imb);
+      break;
     case 0x29:
       add_hl<0x29>(cpu);
       break;
@@ -1384,6 +1397,8 @@ void step(cpu& cpu, mmu& mmu) noexcept {
       break;
     case 0x2f:
     case 0x30:
+      jr(cpu, !cpu.cf, imb);
+      break;
     case 0x31:
       ld_d16<0x31>(cpu, imw);
       break;
@@ -1404,6 +1419,8 @@ void step(cpu& cpu, mmu& mmu) noexcept {
       break;
     case 0x37:
     case 0x38:
+      jr(cpu, cpu.cf, imb);
+      break;
     case 0x39:
       add_hl<0x39>(cpu);
       break;
