@@ -1115,6 +1115,11 @@ void ld_d16(cpu& cpu, const u16 imw) {
 
   auto& r16 = reg16<Tgt>(cpu);
   r16 = imw;
+
+  constexpr u16 length = 3;
+  cpu.pc += length;
+  constexpr u32 timing = 12;
+  cpu.cycles += timing;
 }
 
 template <u8 Op>

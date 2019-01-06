@@ -908,14 +908,25 @@ SCENARIO("ld_16", "[cpu]") {
 
     rc::PROPERTY("ld_16", [&c, &m](const u16 randw) {
       m[c.pc] = *rc::gen::element(0x1, 0x11, 0x21, 0x31);
+      const auto original_pc = c.pc;
 
       m[c.pc + 1] = randw & 0xff;
       m[c.pc + 2] = randw >> 8;
 
       cpu::step(c, m);
 
-      RC_ASSERT(reg16(c, (m[c.pc] >> 4) & 0x3) == randw);
+      RC_ASSERT(reg16(c, (m[original_pc] >> 4) & 0x3) == randw);
     });
+
+    WHEN("calling ld_16") {
+      m[c.pc] = 0x1;
+      cpu::step(c, m);
+
+      THEN("pc increments by 3, cycles by 12") {
+        REQUIRE(c.pc == 3);
+        REQUIRE(c.cycles == 12);
+      }
+    }
   }
 }
 
