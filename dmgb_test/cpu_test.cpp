@@ -547,6 +547,28 @@ SCENARIO("bit", "[cpu]") {
       RC_ASSERT(c.hf == true);
       RC_ASSERT(c.zf == !!(randv & Mask));
     });
+
+    WHEN("test bit of register") {
+      m[c.pc] = 0xcb;
+      m[c.pc + 1] = 0x40;
+      cpu::step(c, m);
+
+      THEN("pc increments by 2, cycles by 8") {
+        REQUIRE(c.pc == 2);
+        REQUIRE(c.cycles == 8);
+      }
+    }
+
+    WHEN("test bit of memory") {
+      m[c.pc] = 0xcb;
+      m[c.pc + 1] = 0x46;
+      cpu::step(c, m);
+
+      THEN("pc increments by 2, cycles by 16") {
+        REQUIRE(c.pc == 2);
+        REQUIRE(c.cycles == 16);
+      }
+    }
   }
 }
 

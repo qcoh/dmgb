@@ -334,9 +334,7 @@ void srl(cpu& cpu, mmu& mmu) {
   cpu.hf = false;
 }
 
-void prefix_cb(cpu& cpu, mmu& mmu) {
-  const u8 op = mmu.read(cpu.pc + 1);
-
+void prefix_cb(cpu& cpu, mmu& mmu, const u8 op) {
   switch (op) {
     case 0x0:
       rlc<0x0>(cpu, mmu);
@@ -1107,6 +1105,11 @@ void prefix_cb(cpu& cpu, mmu& mmu) {
       set<0xff>(cpu, mmu);
       break;
   }
+
+  constexpr u16 length = 2;
+  cpu.pc += length;
+  const u32 timing = ((op & 0x7) == 0x6) ? 16 : 8;
+  cpu.cycles += timing;
 }
 
 template <u8 Op>
@@ -1821,7 +1824,7 @@ void step(cpu& cpu, mmu& mmu) noexcept {
     case 0xc9:
     case 0xca:
     case 0xcb:
-      prefix_cb(cpu, mmu);
+      prefix_cb(cpu, mmu, imb);
       break;
     case 0xcc:
     case 0xcd:
