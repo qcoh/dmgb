@@ -1222,6 +1222,11 @@ void ldi_hl_a(cpu& cpu, mmu& mmu) {
 void ldd_hl_a(cpu& cpu, mmu& mmu) {
   mmu.write(cpu.hl, cpu.a);
   cpu.hl = static_cast<u16>(cpu.hl - 1);
+
+  constexpr u16 length = 1;
+  cpu.pc += length;
+  constexpr u32 timing = 8;
+  cpu.cycles += timing;
 }
 
 void ldi_a_hl(cpu& cpu, mmu& mmu) {

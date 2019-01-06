@@ -1185,6 +1185,16 @@ SCENARIO("ldd_hl_a", "[cpu]") {
       RC_ASSERT(m[randhl] == randa);
       RC_ASSERT(c.hl == static_cast<u16>(randhl - 1));
     });
+
+    WHEN("calling ldd_hl_a") {
+      m[c.pc] = 0x32;
+      cpu::step(c, m);
+
+      THEN("pc increments by 1, cycles by 8") {
+        REQUIRE(c.pc == 1);
+        REQUIRE(c.cycles == 8);
+      }
+    }
   }
 }
 
