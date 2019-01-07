@@ -1253,7 +1253,8 @@ void rst(cpu& cpu, mmu& mmu) {
 }
 
 void jr(cpu& cpu, const bool condition, u8 imb) {
-  cpu.pc += (condition) ? static_cast<int8_t>(imb) : 2;
+  cpu.pc += 2;
+  cpu.pc += (condition) ? static_cast<int8_t>(imb) : 0;
   cpu.cycles += (condition) ? 12 : 8;
 }
 

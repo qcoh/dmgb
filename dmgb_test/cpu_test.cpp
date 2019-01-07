@@ -1356,7 +1356,8 @@ SCENARIO("jr", "[cpu]") {
       if (c.zf) {
         RC_ASSERT(c.pc == (original_pc + 2));
       } else {
-        RC_ASSERT(c.pc == (original_pc + static_cast<signed char>(randimb)));
+        RC_ASSERT(c.pc ==
+                  (2 + original_pc + static_cast<signed char>(randimb)));
       }
     });
 
@@ -1376,7 +1377,8 @@ SCENARIO("jr", "[cpu]") {
       if (!c.zf) {
         RC_ASSERT(c.pc == (original_pc + 2));
       } else {
-        RC_ASSERT(c.pc == (original_pc + static_cast<signed char>(randimb)));
+        RC_ASSERT(c.pc ==
+                  (2 + original_pc + static_cast<signed char>(randimb)));
       }
     });
 
@@ -1396,7 +1398,8 @@ SCENARIO("jr", "[cpu]") {
       if (c.cf) {
         RC_ASSERT(c.pc == (original_pc + 2));
       } else {
-        RC_ASSERT(c.pc == (original_pc + static_cast<signed char>(randimb)));
+        RC_ASSERT(c.pc ==
+                  (2 + original_pc + static_cast<signed char>(randimb)));
       }
     });
 
@@ -1416,7 +1419,8 @@ SCENARIO("jr", "[cpu]") {
       if (!c.cf) {
         RC_ASSERT(c.pc == (original_pc + 2));
       } else {
-        RC_ASSERT(c.pc == (original_pc + static_cast<signed char>(randimb)));
+        RC_ASSERT(c.pc ==
+                  (2 + original_pc + static_cast<signed char>(randimb)));
       }
     });
 
@@ -1431,7 +1435,7 @@ SCENARIO("jr", "[cpu]") {
 
       cpu::step(c, m);
 
-      RC_ASSERT(c.pc == (original_pc + static_cast<signed char>(randimb)));
+      RC_ASSERT(c.pc == (2 + original_pc + static_cast<signed char>(randimb)));
     });
 
     WHEN("jr nz true") {
@@ -1442,7 +1446,7 @@ SCENARIO("jr", "[cpu]") {
       cpu::step(c, m);
 
       THEN("jump, increment cycles by 12") {
-        REQUIRE(c.pc == 0x10);
+        REQUIRE(c.pc == 0x12);
         REQUIRE(c.cycles == 12);
       }
     }
@@ -1467,7 +1471,7 @@ SCENARIO("jr", "[cpu]") {
       cpu::step(c, m);
 
       THEN("jump, increment cycles by 12") {
-        REQUIRE(c.pc == 0x10);
+        REQUIRE(c.pc == 0x12);
         REQUIRE(c.cycles == 12);
       }
     }
@@ -1492,7 +1496,7 @@ SCENARIO("jr", "[cpu]") {
       cpu::step(c, m);
 
       THEN("jump, increment cycles by 12") {
-        REQUIRE(c.pc == 0x10);
+        REQUIRE(c.pc == 0x12);
         REQUIRE(c.cycles == 12);
       }
     }
@@ -1517,7 +1521,7 @@ SCENARIO("jr", "[cpu]") {
       cpu::step(c, m);
 
       THEN("jump, increment cycles by 12") {
-        REQUIRE(c.pc == 0x10);
+        REQUIRE(c.pc == 0x12);
         REQUIRE(c.cycles == 12);
       }
     }
@@ -1541,7 +1545,7 @@ SCENARIO("jr", "[cpu]") {
       cpu::step(c, m);
 
       THEN("jump, increment cycles by 8") {
-        REQUIRE(c.pc == 0x10);
+        REQUIRE(c.pc == 0x12);
         REQUIRE(c.cycles == 12);
       }
     }
