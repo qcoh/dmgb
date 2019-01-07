@@ -545,7 +545,7 @@ SCENARIO("bit", "[cpu]") {
 
       RC_ASSERT(c.nf == false);
       RC_ASSERT(c.hf == true);
-      RC_ASSERT(c.zf == !!(randv & Mask));
+      RC_ASSERT(c.zf == !(randv & Mask));
     });
 
     WHEN("test bit of register") {

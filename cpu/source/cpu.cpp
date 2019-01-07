@@ -214,7 +214,7 @@ void bit(cpu& cpu, mmu& mmu) {
   const u8 src = reg8<Src>(cpu, mmu);
   constexpr u8 Mask = static_cast<u8>(1 << ((Op >> 3) & 0x7));
 
-  cpu.zf = (src & Mask);
+  cpu.zf = !(src & Mask);
   cpu.nf = false;
   cpu.hf = true;
 }
