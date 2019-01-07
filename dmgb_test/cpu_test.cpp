@@ -1360,6 +1360,80 @@ SCENARIO("jr", "[cpu]") {
       }
     });
 
+    rc::PROPERTY("jr z", [&c, &m](const bool randzero, const u8 randimb) {
+      c.zf = randzero;
+
+      c.pc = *rc::gen::suchThat(rc::gen::arbitrary<u16>(), [](u16 x) {
+        return (127 < x) && (x < 0xffff);
+      });
+      const u16 original_pc = c.pc;
+
+      m[c.pc] = 0x28;
+      m[c.pc + 1] = randimb;
+
+      cpu::step(c, m);
+
+      if (!c.zf) {
+        RC_ASSERT(c.pc == (original_pc + 2));
+      } else {
+        RC_ASSERT(c.pc == (original_pc + static_cast<signed char>(randimb)));
+      }
+    });
+
+    rc::PROPERTY("jr nc", [&c, &m](const bool randcarry, const u8 randimb) {
+      c.cf = randcarry;
+
+      c.pc = *rc::gen::suchThat(rc::gen::arbitrary<u16>(), [](u16 x) {
+        return (127 < x) && (x < 0xffff);
+      });
+      const u16 original_pc = c.pc;
+
+      m[c.pc] = 0x30;
+      m[c.pc + 1] = randimb;
+
+      cpu::step(c, m);
+
+      if (c.cf) {
+        RC_ASSERT(c.pc == (original_pc + 2));
+      } else {
+        RC_ASSERT(c.pc == (original_pc + static_cast<signed char>(randimb)));
+      }
+    });
+
+    rc::PROPERTY("jr c", [&c, &m](const bool randcarry, const u8 randimb) {
+      c.cf = randcarry;
+
+      c.pc = *rc::gen::suchThat(rc::gen::arbitrary<u16>(), [](u16 x) {
+        return (127 < x) && (x < 0xffff);
+      });
+      const u16 original_pc = c.pc;
+
+      m[c.pc] = 0x38;
+      m[c.pc + 1] = randimb;
+
+      cpu::step(c, m);
+
+      if (!c.cf) {
+        RC_ASSERT(c.pc == (original_pc + 2));
+      } else {
+        RC_ASSERT(c.pc == (original_pc + static_cast<signed char>(randimb)));
+      }
+    });
+
+    rc::PROPERTY("jr", [&c, &m](const u8 randimb) {
+      c.pc = *rc::gen::suchThat(rc::gen::arbitrary<u16>(), [](u16 x) {
+        return (127 < x) && (x < 0xffff);
+      });
+      const u16 original_pc = c.pc;
+
+      m[c.pc] = 0x18;
+      m[c.pc + 1] = randimb;
+
+      cpu::step(c, m);
+
+      RC_ASSERT(c.pc == (original_pc + static_cast<signed char>(randimb)));
+    });
+
     WHEN("jr nz true") {
       m[c.pc] = 0x20;
       m[c.pc + 1] = 0x10;
@@ -1382,6 +1456,93 @@ SCENARIO("jr", "[cpu]") {
       THEN("no jump, pc increments by 2, cycles by 8") {
         REQUIRE(c.pc == 2);
         REQUIRE(c.cycles == 8);
+      }
+    }
+
+    WHEN("jr z true") {
+      m[c.pc] = 0x28;
+      m[c.pc + 1] = 0x10;
+      c.zf = true;
+
+      cpu::step(c, m);
+
+      THEN("jump, increment cycles by 12") {
+        REQUIRE(c.pc == 0x10);
+        REQUIRE(c.cycles == 12);
+      }
+    }
+    WHEN("jr z false") {
+      m[c.pc] = 0x28;
+      m[c.pc + 1] = 0;
+      c.zf = false;
+
+      cpu::step(c, m);
+
+      THEN("no jump, pc increments by 2, cycles by 8") {
+        REQUIRE(c.pc == 2);
+        REQUIRE(c.cycles == 8);
+      }
+    }
+
+    WHEN("jr nc true") {
+      m[c.pc] = 0x30;
+      m[c.pc + 1] = 0x10;
+      c.cf = false;
+
+      cpu::step(c, m);
+
+      THEN("jump, increment cycles by 12") {
+        REQUIRE(c.pc == 0x10);
+        REQUIRE(c.cycles == 12);
+      }
+    }
+    WHEN("jr nc false") {
+      m[c.pc] = 0x30;
+      m[c.pc + 1] = 0;
+      c.cf = true;
+
+      cpu::step(c, m);
+
+      THEN("no jump, pc increments by 2, cycles by 8") {
+        REQUIRE(c.pc == 2);
+        REQUIRE(c.cycles == 8);
+      }
+    }
+
+    WHEN("jr c true") {
+      m[c.pc] = 0x38;
+      m[c.pc + 1] = 0x10;
+      c.cf = true;
+
+      cpu::step(c, m);
+
+      THEN("jump, increment cycles by 12") {
+        REQUIRE(c.pc == 0x10);
+        REQUIRE(c.cycles == 12);
+      }
+    }
+    WHEN("jr z false") {
+      m[c.pc] = 0x38;
+      m[c.pc + 1] = 0;
+      c.cf = false;
+
+      cpu::step(c, m);
+
+      THEN("no jump, pc increments by 2, cycles by 8") {
+        REQUIRE(c.pc == 2);
+        REQUIRE(c.cycles == 8);
+      }
+    }
+
+    WHEN("jr") {
+      m[c.pc] = 0x18;
+      m[c.pc + 1] = 0x10;
+
+      cpu::step(c, m);
+
+      THEN("jump, increment cycles by 8") {
+        REQUIRE(c.pc == 0x10);
+        REQUIRE(c.cycles == 12);
       }
     }
   }
