@@ -1061,13 +1061,34 @@ SCENARIO("ld_d8", "[cpu]") {
       c.pc = *rc::gen::suchThat(rc::gen::inRange(0, 10), [&c](int x) {
         return x != c.hl && (x + 1) != c.hl;
       });
+      const u16 original_pc = c.pc;
       m[c.pc] = *rc::gen::element(0x6, 0xe, 0x16, 0x1e, 0x26, 0x2e, 0x36, 0x3e);
       m[c.pc + 1] = randv;
 
       cpu::step(c, m);
 
-      RC_ASSERT(reg(c, m, (m[c.pc] >> 3) & 0x7) == randv);
+      RC_ASSERT(reg(c, m, (m[original_pc] >> 3) & 0x7) == randv);
     });
+
+    WHEN("loading immediate byte to a") {
+      m[c.pc] = 0x3e;
+      cpu::step(c, m);
+
+      THEN("pc increments by 2, cycles by 8") {
+        REQUIRE(c.pc == 2);
+        REQUIRE(c.cycles == 8);
+      }
+    }
+
+    WHEN("loading immediate byte to (hl)") {
+      m[c.pc] = 0x36;
+      cpu::step(c, m);
+
+      THEN("pc increments by 2, cycles by 12") {
+        REQUIRE(c.pc == 2);
+        REQUIRE(c.cycles == 12);
+      }
+    }
   }
 }
 

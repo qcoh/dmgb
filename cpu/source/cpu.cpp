@@ -1170,6 +1170,11 @@ void ld_d8(cpu& cpu, mmu& mmu, const u8 imb) {
   constexpr u8 Tgt = (Op >> 3) & 0x7;
   decltype(auto) lhs = reg8<Tgt>(cpu, mmu);
   lhs = imb;
+
+  constexpr u16 length = 2;
+  cpu.pc += length;
+  constexpr u32 timing = (Op == 0x36) ? 12 : 8;
+  cpu.cycles += timing;
 }
 
 template <u8 Op>
