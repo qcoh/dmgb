@@ -9,15 +9,16 @@ set(SOURCES
 	word_test.cpp
 )
 
-include_directories(
-	include/
-)
-
 add_subdirectory(external/rapidcheck)
 
-add_executable(${PROJECT_NAME}_test ${SOURCES})
+add_executable(dmgb_test
+       	${SOURCES})
 
-target_link_libraries(${PROJECT_NAME}_test
+target_include_directories(dmgb_test PRIVATE
+	include
+)
+
+target_link_libraries(dmgb_test PRIVATE
 	cpu
 	mmu
 	utl
@@ -27,4 +28,4 @@ target_link_libraries(${PROJECT_NAME}_test
 
 include(CTest)
 include(Catch)
-catch_discover_tests(${PROJECT_NAME}_test)
+catch_discover_tests(dmgb_test)

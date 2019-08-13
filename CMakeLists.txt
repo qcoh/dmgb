@@ -2,10 +2,11 @@ cmake_minimum_required(VERSION 3.5)
 
 project(dmgb VERSION 0.0)
 
+list(APPEND CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/cmake)
+
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
-set(CMAKE_BUILD_TYPE Debug)
 add_compile_options(-Wall -Wextra -pedantic -Werror)
 
 # https://github.com/NTAP/warpcore/blob/master/CMakeLists.txt#L137
@@ -23,15 +24,10 @@ if(CMAKE_CXX_CPPCHECK)
 	)
 endif()
 
+include(unity_build)
+
 include(${CMAKE_BINARY_DIR}/conanbuildinfo.cmake)
 conan_basic_setup(TARGETS)
-
-# hmpf
-include_directories(
-	${PROJECT_SOURCE_DIR}/cpu/include
-	${PROJECT_SOURCE_DIR}/mmu/include
-	${PROJECT_SOURCE_DIR}/utl/include
-)
 
 add_subdirectory(cpu)
 add_subdirectory(mmu)

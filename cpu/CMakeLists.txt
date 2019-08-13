@@ -1,16 +1,14 @@
-set(INCLUDE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/include")
-set(SOURCE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/source")
-
 set(SOURCES
-	${INCLUDE_DIR}/cpu.h
-	${INCLUDE_DIR}/bitref.h
+	source/cpu.cpp)
 
-	${SOURCE_DIR}/cpu.cpp
-)
+enable_unity_build(cpu SOURCES)
 
-add_library(cpu STATIC ${SOURCES})
+add_library(cpu STATIC
+	${SOURCES})
 
-target_include_directories(
-	cpu
-	PUBLIC "${INCLUDE_DIR}"
-)
+target_include_directories(cpu PUBLIC
+	include)
+
+target_link_libraries(cpu PRIVATE
+	mmu
+	utl)
